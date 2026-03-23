@@ -4,7 +4,7 @@ ResumeForge is a free, browser‑based resume builder that leverages AI to help 
 
 ## Live Demo
 
-Try it now: [(https://ahmad-344.github.io/ResumeForge-AI-Powered-Resume-Builder/)](#)
+Try it now: [https://ahmad-344.github.io/ResumeForge-AI-Powered-Resume-Builder/](#)
 
 ## Features
 
