@@ -579,18 +579,66 @@ a{text-decoration:none}
 
 /* ═══ PRINT ══════════════════════════════════════════════════ */
 @media print{
-  html,body{overflow:visible!important;height:auto!important;background:#fff!important}
+  html,body{
+    overflow:visible!important;
+    height:auto!important;
+    background:#fff!important;
+    margin:0!important;
+    padding:0!important;
+  }
+  /* Hide all UI elements */
   #view-landing,#view-cover,#view-privacy,#view-terms,.top-bar,.left-panel,.preview-toolbar,
   .ai-fab,.toast,.modal-overlay,.ai-panel-overlay,.import-modal-overlay,.checklist-btn,
   .checklist-popup,.ats-modal-overlay,.export-modal-overlay,.share-modal-overlay,
   .mobile-bottom-bar,.ats-fab-mobile,.builder-tab-bar{display:none!important}
-  #view-builder.active{display:block!important;height:auto!important;overflow:visible!important}
-  .builder-body{display:block!important;height:auto!important;overflow:visible!important}
-  .right-panel{overflow:visible!important;height:auto!important;background:#fff!important;display:block!important}
-  .paper-wrap{overflow:visible!important;padding:0!important;display:block!important;background:#fff!important}
-  .paper-outer{width:auto!important;height:auto!important}
-  .resume-paper{transform:none!important;box-shadow:none!important;width:100%!important;min-height:auto!important}
-  @page{size:A4 portrait;margin:0}
+  #view-builder.active{
+    display:block!important;
+    height:auto!important;
+    overflow:visible!important;
+  }
+  .builder-body{
+    display:block!important;
+    height:auto!important;
+    overflow:visible!important;
+  }
+  .right-panel{
+    overflow:visible!important;
+    height:auto!important;
+    background:#fff!important;
+    display:block!important;
+  }
+  .paper-wrap{
+    overflow:visible!important;
+    padding:0!important;
+    display:block!important;
+    background:#fff!important;
+    text-align:left!important;
+    margin:0!important;
+  }
+  .paper-outer{
+    width:100%!important;
+    height:auto!important;
+    margin:0!important;
+    padding:0!important;
+  }
+  .resume-paper{
+    transform:none!important;
+    box-shadow:none!important;
+    width:100%!important;
+    min-height:auto!important;
+    margin:0!important;
+    padding:0!important;
+  }
+  /* Force background colors and box shadows to print */
+  *{
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+    color-adjust: exact;
+  }
+  @page{
+    size:A4 portrait;
+    margin:0;
+  }
 }
 
 /* ═══ RESPONSIVE ═════════════════════════════════════════════ */
@@ -1556,8 +1604,8 @@ a{text-decoration:none}
       </div>
       <div class="import-status" id="importStatus"></div>
       <div style="margin-top:14px;padding:11px 14px;background:#FFF7ED;border:1.5px solid #FED7AA;border-radius:8px;font-size:.79rem;color:#92400E;line-height:1.55">
-        <strong>Note:</strong> After import, review and adjust any fields. AI extraction may not be perfect for all resume formats. Your original file is never stored — processing happens in your browser only.
-      </div>
+  <strong>Note:</strong> After import, review and adjust any fields. AI extraction may not be perfect for all resume formats. Your original file is never stored — processing happens in your browser only.
+</div>
     </div>
   </div>
 </div>
@@ -1629,8 +1677,9 @@ a{text-decoration:none}
         </div>
       </div>
       <div class="export-info" id="exportInfo">
-        <strong style="color:var(--dark)">PDF Format:</strong> Print-perfect, exact layout. Best for most applications. Use browser "Save as PDF" in the print dialog.
-      </div>
+  <strong>PDF Format:</strong> Selectable text, perfect for re‑import and ATS parsing.
+  When you click "Download PDF", your browser's print dialog will appear. Choose "Save as PDF" to save.
+</div>
       <button class="export-dl-btn" id="exportDlBtn" onclick="doExport()">
         <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
         Download PDF
@@ -2850,6 +2899,17 @@ function safeParseJSON(text) {
   throw new Error('Could not parse AI response. Please try again.');
 }
 
+// Helper to remove duplicate entries from arrays
+function deduplicateArray(arr, keyFunc) {
+  const seen = new Set();
+  return arr.filter(item => {
+    const key = keyFunc(item);
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+}
+
 // Core Gemini API call
 async function _geminiFetch(prompt, system, maxTok) {
   const key = getAPIKey();
@@ -3112,6 +3172,12 @@ if (Array.isArray(parsed.certifications)) {
     if (c.certName) state.certifications.push({ id: uid(), ...c });
   });
 }
+// Remove duplicates
+state.experience = deduplicateArray(state.experience, e => `${e.company}|${e.title}`);
+state.education = deduplicateArray(state.education, e => `${e.school}|${e.degree}`);
+state.skills = deduplicateArray(state.skills, s => s.skillName);
+state.languages = deduplicateArray(state.languages, l => l.langName);
+state.certifications = deduplicateArray(state.certifications, c => c.certName);
     if(statusEl){statusEl.className='import-status show success';statusEl.innerHTML=`✓ Resume imported! Found: ${state.experience.length} jobs, ${state.skills.length} skills, ${state.education.length} education entries.`;}
     setTimeout(()=>{closeImportModal();renderSectionsList();buildColorSwatches();schedulePreview();showView('builder');showToast('Resume imported! Review and adjust your details.');},2000);
   }catch(e){
@@ -3180,70 +3246,20 @@ function downloadPDF() {
   const element = document.getElementById('resumePaper');
   if (!element) return;
 
-  // Store original styles
+  // Store original zoom
   const originalZoom = state.zoom;
-  const originalTransform = element.style.transform;
-  const originalOrigin = element.style.transformOrigin;
-  const originalBoxShadow = element.style.boxShadow;
-  const originalPosition = element.style.position;
-  const originalMinHeight = element.style.minHeight;
-  const originalHeight = element.style.height;
-
-  // Temporarily set element to its natural size
+  // Temporarily set zoom to 1 for correct print layout
   state.zoom = 1;
   setZoom(1);
-  element.style.transform = 'none';
-  element.style.transformOrigin = 'top left';
-  element.style.boxShadow = 'none';
-  element.style.position = 'relative';
-
-  // Remove fixed min-height so element can shrink
-  element.style.minHeight = '0px';
-  element.style.height = 'auto';
-
-  // Force reflow and measure content height
-  void element.offsetHeight;
-  const contentHeight = element.scrollHeight;
-
-  // Set height exactly to content height (no extra space)
-  element.style.height = contentHeight + 'px';
-
-  // Options for html2pdf – zero margins, A4 page
-  const opt = {
-    margin:        [0, 0, 0, 0],
-    filename:     `${fullName().replace(/\s+/g, '-') || 'Resume'}.pdf`,
-    image:        { type: 'jpeg', quality: 0.98 },
-    html2canvas:  { scale: 2, letterRendering: true, useCORS: false, logging: false },
-    jsPDF:        { unit: 'in', format: 'a4', orientation: 'portrait' }
-  };
-
-  // Generate PDF
-  html2pdf().set(opt).from(element).save()
-    .then(() => {
-      // Restore all original styles after download
+  // Use a short delay to ensure the layout is updated
+  setTimeout(() => {
+    window.print();
+    // Restore original zoom after print dialog closes
+    setTimeout(() => {
       state.zoom = originalZoom;
       setZoom(originalZoom);
-      element.style.transform = originalTransform;
-      element.style.transformOrigin = originalOrigin;
-      element.style.boxShadow = originalBoxShadow;
-      element.style.position = originalPosition;
-      element.style.minHeight = originalMinHeight;
-      element.style.height = originalHeight;
-      showToast('PDF downloaded!');
-    })
-    .catch(err => {
-      console.error('PDF generation failed:', err);
-      showToast('Failed to generate PDF. Try again.');
-      // Restore styles even on error
-      state.zoom = originalZoom;
-      setZoom(originalZoom);
-      element.style.transform = originalTransform;
-      element.style.transformOrigin = originalOrigin;
-      element.style.boxShadow = originalBoxShadow;
-      element.style.position = originalPosition;
-      element.style.minHeight = originalMinHeight;
-      element.style.height = originalHeight;
-    });
+    }, 1000);
+  }, 100);
 }
 
 function downloadTXT(){const d=state,lines=[];lines.push(fullName().toUpperCase());if(d.contact.title)lines.push(d.contact.title);const contacts=[d.contact.email,d.contact.phone,d.contact.location].filter(Boolean);if(contacts.length)lines.push(contacts.join(' | '));if(d.contact.linkedin)lines.push(d.contact.linkedin);lines.push('');if(d.summary){lines.push('PROFESSIONAL SUMMARY','-'.repeat(30),d.summary,'');}if(d.experience.length){lines.push('WORK EXPERIENCE','-'.repeat(30));d.experience.forEach(e=>{const dates=e.startDate?`${e.startDate} – ${e.current?'Present':e.endDate||''}`:'';lines.push(`${e.company||''}${dates?' · '+dates:''}`);if(e.title)lines.push(e.title);if(e.bullets)e.bullets.split('\n').filter(l=>l.trim()).forEach(b=>lines.push('  '+b));lines.push('');});}if(d.education.length){lines.push('EDUCATION','-'.repeat(30));d.education.forEach(e=>{lines.push(e.school||'');lines.push([e.degree,e.field].filter(Boolean).join(', '));if(e.startYear||e.endYear)lines.push(`${e.startYear||''}${e.endYear?' – '+e.endYear:''}`);lines.push('');});}if(d.skills.length){lines.push('SKILLS',d.skills.map(s=>s.skillName).join(', '),'');}if(d.languages.length){lines.push('LANGUAGES',d.languages.map(l=>[l.langName,l.langLevel].filter(Boolean).join(': ')).join(' | '),'');}if(d.certifications.length){lines.push('CERTIFICATIONS');d.certifications.forEach(c=>lines.push([c.certName,c.certIssuer,c.certDate].filter(Boolean).join(' – ')));lines.push('');}if(d.projects.length){lines.push('PROJECTS');d.projects.forEach(p=>{lines.push(p.projName||'');if(p.projTech)lines.push(p.projTech);if(p.projDesc)lines.push(p.projDesc);lines.push('');});}const blob=new Blob([lines.join('\n')],{type:'text/plain'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`${fullName().replace(/\s+/g,'-')}-Resume.txt`;a.click();showToast('TXT resume downloaded!');}
@@ -3280,6 +3296,6 @@ function showToast(msg){const t=document.getElementById('toast');if(!t)return;t.
 // ═══════════════════════════════════════════════════════════════
 function initScrollAnimations(){const io=new IntersectionObserver(entries=>{entries.forEach(en=>{if(en.isIntersecting){en.target.classList.add('vis');io.unobserve(en.target);}});},{threshold:0.1});document.querySelectorAll('.fade-up').forEach(el=>io.observe(el));}
 </script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" integrity="sha512-GsLlZN/3F2ErC5ifS5QtgpiJtWd43JWSuIgh7mbzZ8zBps+dvLusV+eNQATqgA/HdeKFVgA5v3S/cIrLF7QnIg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
 </body>
 </html>
