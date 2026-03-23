@@ -41,12 +41,6 @@ Try it now: [ResumeForge Live](#)
 - PDF.js – PDF text extraction for import  
 - JSZip – DOCX parsing for import  
 
-## Getting Started
-
-1. **Clone the repository**  
-```bash
-git clone https://github.com/yourusername/ResumeForge.git
-cd ResumeForge
 ## Open the Application
 
 Simply open `index.html` in a modern web browser. No build step or server is required.
