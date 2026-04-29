@@ -6370,6 +6370,12 @@
         <button class="modal-x" onclick="closeAPIKeyModal()">&times;</button>
       </div>
       <div class="import-modal-body">
+        <!-- AI Features Notice -->
+        <div id="aiKeyNotice" style="background:linear-gradient(135deg,#FFF7ED,#FFFBEB);border:2px solid #FED7AA;border-radius:12px;padding:14px 16px;margin-bottom:16px;text-align:center">
+          <div style="font-size:1.1rem;margin-bottom:6px">🤖</div>
+          <div style="font-family:'Sora',sans-serif;font-weight:800;font-size:.92rem;color:#92400E;margin-bottom:4px">Gemini API Key Required</div>
+          <div style="font-size:.8rem;color:#B45309;line-height:1.55">To use <strong>any AI features</strong> of ResumeForge — including AI Writer, Import Resume, Cover Letter Generator, ATS Tips, and Skills Suggester — you need to add your <strong>free Google Gemini API key</strong>.</div>
+        </div>
         <div id="keyActiveBanner"
           style="display:none;background:#F0FDF4;border:1.5px solid #86EFAC;border-radius:9px;padding:11px 15px;margin-bottom:14px;font-size:.83rem;color:#065F46;font-weight:700;display:none">
           ✓ Your AI Key is active — all features are enabled!
@@ -7701,6 +7707,8 @@
       });
       const banner = document.getElementById('keyActiveBanner');
       if (banner) banner.style.display = ok ? 'block' : 'none';
+      const notice = document.getElementById('aiKeyNotice');
+      if (notice) notice.style.display = ok ? 'none' : 'block';
     }
 
     function openAPIKeyModal() {
