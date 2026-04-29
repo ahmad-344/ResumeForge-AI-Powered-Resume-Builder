@@ -888,8 +888,8 @@
 
     .tpl-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(196px, 1fr));
-      gap: 18px
+      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      gap: 14px
     }
 
     .tpl-card {
@@ -911,8 +911,15 @@
 
     .tpl-thumb {
       position: relative;
-      height: 215px;
+      height: 0;
+      padding-bottom: 130%;  /* ~A4 ratio: taller than wide */
       overflow: hidden
+    }
+    .tpl-thumb > * {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
     }
 
     .tpl-thumb-overlay {
@@ -1646,6 +1653,14 @@
       height: 12px
     }
 
+    .lph-change-tpl-btn {
+      background: linear-gradient(135deg, #EFF6FF, #DBEAFE);
+      color: var(--blue)
+    }
+    .lph-change-tpl-btn:hover {
+      background: linear-gradient(135deg, #DBEAFE, #BFDBFE) !important
+    }
+
     .progress-bar-wrap {
       height: 5px;
       background: var(--blue-100);
@@ -1669,7 +1684,8 @@
     .sections-list {
       flex: 1;
       overflow-y: auto;
-      padding: 8px
+      padding: 8px;
+      -webkit-overflow-scrolling: touch
     }
 
     .sections-list::-webkit-scrollbar {
@@ -2065,11 +2081,13 @@
       flex-shrink: 0;
       background: #fff;
       border-bottom: 1px solid var(--border);
-      padding: 9px 18px;
+      padding: 8px 14px;
       display: flex;
       align-items: center;
-      gap: 14px;
-      flex-wrap: wrap
+      gap: 10px;
+      flex-wrap: wrap;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch
     }
 
     .pt-label {
@@ -2148,10 +2166,12 @@
     .paper-wrap {
       flex: 1;
       overflow-y: auto;
+      overflow-x: auto;
       padding: 28px;
       display: flex;
       justify-content: center;
-      align-items: flex-start
+      align-items: flex-start;
+      -webkit-overflow-scrolling: touch
     }
 
     .paper-wrap::-webkit-scrollbar {
@@ -2187,15 +2207,45 @@
     }
 
     .cl-top-bar {
-      height: 60px;
+      height: 52px;
       background: #fff;
       border-bottom: 1px solid var(--border);
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 0 20px;
-      gap: 12px;
+      padding: 0 16px;
+      gap: 8px;
       flex-shrink: 0
+    }
+    .cl-title-group {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      min-width: 0;
+      overflow: hidden
+    }
+    .cl-title-text {
+      font-family: 'Sora', sans-serif;
+      font-weight: 800;
+      font-size: .9rem;
+      color: var(--dark);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis
+    }
+    .cl-ai-badge {
+      background: linear-gradient(135deg, #EDE9FE, #DDD6FE);
+      color: #5B21B6;
+      padding: 2px 9px;
+      border-radius: 100px;
+      font-size: .65rem;
+      font-weight: 700;
+      font-family: 'Sora', sans-serif;
+      white-space: nowrap;
+      flex-shrink: 0
+    }
+    .cl-back-label {
+      /* shown on wider screens, hidden below 480px */
     }
 
     .cl-left {
@@ -3223,8 +3273,16 @@
     }
 
     .modal-tpl-thumb {
-      height: 110px;
-      overflow: hidden
+      height: 0;
+      padding-bottom: 85%;
+      overflow: hidden;
+      position: relative
+    }
+    .modal-tpl-thumb > * {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
     }
 
     .modal-tpl-label {
@@ -3643,22 +3701,22 @@
     }
 
     .cl-dot {
-      min-width: 17px;
-      height: 17px;
-      background: var(--blue);
+      min-width: 15px;
+      height: 15px;
+      background: #EF4444;
       border-radius: 50%;
       color: #fff;
-      font-size: .62rem;
+      font-size: .58rem;
       font-weight: 800;
-      display: flex;
+      display: none;
       align-items: center;
       justify-content: center
     }
 
     .checklist-popup {
       position: fixed;
-      bottom: 78px;
-      right: 138px;
+      bottom: 116px; /* above both bars on desktop */
+      right: 20px;
       background: #fff;
       border: 1.5px solid var(--border);
       border-radius: 13px;
@@ -3763,19 +3821,28 @@
       position: fixed;
       bottom: 28px;
       left: 50%;
-      transform: translateX(-50%) translateY(80px);
+      transform: translateX(-50%) translateY(calc(100% + 40px));
       background: var(--dark);
       color: #fff;
-      padding: 11px 20px;
+      padding: 0;
       border-radius: 9px;
       font-size: .85rem;
       font-weight: 600;
       font-family: 'Sora', sans-serif;
       box-shadow: 0 8px 24px rgba(0, 0, 0, .25);
-      transition: transform .38s cubic-bezier(.34, 1.56, .64, 1);
+      transition: transform .38s cubic-bezier(.34, 1.56, .64, 1), opacity .38s;
       z-index: 9999;
       pointer-events: none;
-      white-space: nowrap
+      white-space: nowrap;
+      opacity: 0;
+      max-height: 0;
+      overflow: hidden
+    }
+    .toast.show {
+      padding: 11px 20px;
+      max-height: 60px;
+      opacity: 1;
+      transform: translateX(-50%) translateY(0)
     }
 
     .toast.show {
@@ -4116,8 +4183,11 @@
       display: none;
       background: #fff;
       border-bottom: 1px solid var(--border);
-      padding: 0 12px;
-      flex-shrink: 0
+      padding: 0;
+      flex-shrink: 0;
+      position: sticky;
+      top: 0;
+      z-index: 90
     }
 
     .builder-tab {
@@ -4155,12 +4225,8 @@
       padding: 0 6px;
       box-shadow: 0 -3px 16px rgba(0, 0, 0, .07)
     }
-
-    @media(max-width:768px) {
-      .mobile-bottom-bar {
-        display: flex
-      }
-    }
+    /* mobile-bottom-bar visibility controlled entirely by JS (showView)
+       to prevent Chrome from rendering position:fixed inside display:none parent */
 
     .mbb-btn {
       display: flex;
@@ -4289,25 +4355,23 @@
     @media(max-width:768px) {
       .top-bar {
         height: 52px;
-        padding: 0 12px;
-        gap: 8px
+        padding: 0 10px;
+        gap: 4px
       }
+      .tb-left { flex: 1; min-width: 0; overflow: hidden }
+      .cl-top-bar .tb-left { flex: 1; min-width: 0; overflow: hidden }
+      .cl-top-bar .tb-right { flex-shrink: 0; gap: 4px }
+      .tb-tpl-name { max-width: 90px; font-size: .8rem }
+      .tb-change-btn { display: none }
+      .tb-right { gap: 3px; flex-shrink: 0 }
+      .tb-right .btn-sm { padding: 7px 9px; min-width: 34px; justify-content: center }
+      .tb-right .btn-sm span { display: none }
+      .tb-right .btn-blue { padding: 7px 10px }
+      .tb-right a span { display: none }
+      .tb-center { display: none !important }
 
-      .tb-right .btn-sm span {
-        display: none
-      }
-
-      .tb-right a span {
-        display: none
-      }
-
-      .form-row {
-        grid-template-columns: 1fr
-      }
-
-      .form-row.two {
-        grid-template-columns: 1fr 1fr
-      }
+      .form-row { grid-template-columns: 1fr }
+      .form-row.two { grid-template-columns: 1fr 1fr }
 
       .ai-panel {
         width: 100%;
@@ -4315,15 +4379,8 @@
         height: 88vh;
         transform: translateY(100%)
       }
-
-      .ai-panel-overlay {
-        align-items: flex-end;
-        justify-content: center
-      }
-
-      .ai-panel-overlay.open .ai-panel {
-        transform: translateY(0)
-      }
+      .ai-panel-overlay { align-items: flex-end; justify-content: center }
+      .ai-panel-overlay.open .ai-panel { transform: translateY(0) }
 
       .ai-side {
         width: 100%;
@@ -4331,124 +4388,55 @@
         height: 86vh;
         transform: translateY(100%)
       }
+      .ai-side-overlay { align-items: flex-end; justify-content: center }
+      .ai-side-overlay.open .ai-side { transform: none }
 
-      .ai-side-overlay {
-        align-items: flex-end;
-        justify-content: center
+      /* Tools bar (52px) + Footer (58px) = 110px — only builder/cover view */
+      #view-builder.active ~ * body,
+      body:has(#view-builder.active),
+      body:has(#view-cover.active) { padding-bottom: 110px }
+
+      /* Safe fallback via JS class on body */
+      body.builder-active { padding-bottom: 110px }
+
+      /* Hide old floating buttons - replaced by tools bar */
+      .ai-fab { display: none !important }
+      .checklist-btn { display: none !important }
+
+      /* Checklist popup sits above both bars */
+      .checklist-popup { left: 10px; right: 10px; width: auto; bottom: 115px }
+      .toast { bottom: 118px }
+
+      /* Cover letter top bar responsive */
+      .cl-top-bar { height: 52px; padding: 0 10px; gap: 6px }
+      .cl-title-text { font-size: .78rem; max-width: 110px }
+      .cl-ai-badge { font-size: .58rem; padding: 1px 6px }
+      .cl-back-label { display: none }
+      /* Hide generate/txt buttons on mobile (in mobile footer bar) */
+      #clGenerateBtn span, #clTxtBtn span { display: none }
+      #clGenerateBtn { padding: 7px 9px; min-width: 34px }
+      #clTxtBtn { padding: 7px 9px; min-width: 34px }
+
+            .nav-links { display: none }
+
+      .steps { grid-template-columns: 1fr; max-width: 400px; margin: 0 auto }
+      .feat-grid { grid-template-columns: 1fr 1fr }
+      .testi-grid { grid-template-columns: 1fr }
+      .stats-inner { gap: 20px }
+      .hero-grid { grid-template-columns: 1fr; text-align: center }
+      .fb-ats, .fb-pdf, .fb-ai { display: none }
+      .hero-actions { justify-content: center }
+      .hero-trust { justify-content: center }
+      .tpl-grid { grid-template-columns: repeat(auto-fill, minmax(155px, 1fr)) }
+
+      .ats-modal-overlay, .export-modal-overlay, .share-modal-overlay,
+      .modal-overlay, .import-modal-overlay { align-items: flex-end }
+      .ats-modal, .export-modal, .share-modal, .modal-box, .import-modal {
+        border-radius: 18px 18px 0 0; width: 100%; max-height: 92vh
       }
 
-      .ai-side-overlay.open .ai-side {
-        transform: none
-      }
-
-      body {
-        padding-bottom: 58px
-      }
-
-      .ai-fab {
-        bottom: 70px;
-        right: 12px;
-        border-radius: 50%;
-        width: 46px;
-        height: 46px;
-        padding: 0;
-        justify-content: center
-      }
-
-      .ai-fab span:not(.fab-pulse) {
-        display: none
-      }
-
-      .checklist-btn {
-        bottom: 70px;
-        left: 12px;
-        padding: 8px 11px
-      }
-
-      .checklist-btn span:not(.cl-dot) {
-        display: none
-      }
-
-      .checklist-popup {
-        left: 10px;
-        right: 10px;
-        width: auto;
-        bottom: 66px
-      }
-
-      .toast {
-        bottom: 70px
-      }
-
-      .nav-links {
-        display: none
-      }
-
-      .steps {
-        grid-template-columns: 1fr;
-        max-width: 360px
-      }
-
-      .feat-grid {
-        grid-template-columns: 1fr 1fr
-      }
-
-      .testi-grid {
-        grid-template-columns: 1fr
-      }
-
-      .stats-inner {
-        gap: 20px
-      }
-
-      .hero-grid {
-        grid-template-columns: 1fr;
-        text-align: center
-      }
-
-      .fb-ats,
-      .fb-pdf,
-      .fb-ai {
-        display: none
-      }
-
-      .hero-actions {
-        justify-content: center
-      }
-
-      .hero-trust {
-        justify-content: center
-      }
-
-      .tpl-grid {
-        grid-template-columns: repeat(auto-fill, minmax(155px, 1fr))
-      }
-
-      .ats-modal-overlay,
-      .export-modal-overlay,
-      .share-modal-overlay,
-      .modal-overlay,
-      .import-modal-overlay {
-        align-items: flex-end
-      }
-
-      .ats-modal,
-      .export-modal,
-      .share-modal,
-      .modal-box,
-      .import-modal {
-        border-radius: 18px 18px 0 0;
-        width: 100%;
-        max-height: 92vh
-      }
-
-      .policy-page {
-        padding: 32px 1rem 60px
-      }
-
-      .policy-title {
-        font-size: 1.7rem
-      }
+      .policy-page { padding: 32px 1rem 60px }
+      .policy-title { font-size: 1.7rem }
     }
 
     @media(max-width:480px) {
@@ -4471,21 +4459,320 @@
       select {
         font-size: 16px !important
       }
+      .cl-title-text { max-width: 80px; font-size: .72rem }
+      .cl-ai-badge { display: none }
     }
 
     @media(hover:none) {
-
-      input,
-      textarea,
-      select {
-        font-size: 16px !important
-      }
-
-      .btn:hover,
-      .btn-sm:hover {
-        transform: none !important
-      }
+      input, textarea, select { font-size: 16px !important }
+      .btn:hover, .btn-sm:hover { transform: none !important }
     }
+
+    /* ═══ STICKY TOOLS BAR (AI Writer + ATS + Checklist) ═══════ */
+    .mobile-tools-bar {
+      display: none;
+      position: fixed;
+      bottom: 58px;
+      left: 0; right: 0;
+      height: 52px;
+      background: #fff;
+      border-top: 1px solid var(--border);
+      z-index: 299;
+      align-items: stretch;
+      justify-content: stretch;
+      box-shadow: 0 -2px 12px rgba(27,79,216,.08)
+    }
+    .mtb-btn {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 2px;
+      background: none;
+      border: none;
+      font-family: 'Sora', sans-serif;
+      font-size: .6rem;
+      font-weight: 700;
+      color: var(--muted);
+      cursor: pointer;
+      padding: 4px 2px;
+      transition: color .18s, background .18s;
+      min-width: 0
+    }
+    .mtb-btn:hover, .mtb-btn:active { color: var(--blue); background: var(--blue-50) }
+    .mtb-btn svg { flex-shrink: 0 }
+    .mtb-divider {
+      width: 1px;
+      background: var(--border);
+      margin: 8px 0;
+      flex-shrink: 0
+    }
+    .mtb-ats-ring {
+      position: relative;
+      width: 22px;
+      height: 22px;
+      display: flex;
+      align-items: center;
+      justify-content: center
+    }
+    .mtb-ats-num {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Sora', sans-serif;
+      font-weight: 800;
+      font-size: .48rem;
+      color: var(--blue)
+    }
+
+    /* ═══ HAMBURGER MENU ════════════════════════════════════════ */
+    .hamburger {
+      display: none;
+      flex-direction: column;
+      justify-content: center;
+      gap: 5px;
+      background: none;
+      border: none;
+      padding: 8px 6px;
+      cursor: pointer;
+      z-index: 301;
+      flex-shrink: 0
+    }
+    .hamburger span {
+      display: block;
+      width: 22px;
+      height: 2px;
+      background: var(--dark);
+      border-radius: 2px;
+      transition: all .3s
+    }
+    .hamburger.open span:nth-child(1) { transform: rotate(45deg) translate(5px, 5px) }
+    .hamburger.open span:nth-child(2) { opacity: 0 }
+    .hamburger.open span:nth-child(3) { transform: rotate(-45deg) translate(5px, -5px) }
+
+    .mobile-nav-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(15,23,42,.5);
+      z-index: 9998;
+      backdrop-filter: blur(2px)
+    }
+    .mobile-nav-overlay.show { display: block }
+
+    .mobile-nav-drawer {
+      position: fixed;
+      top: 0;
+      right: -320px;
+      width: 300px;
+      height: 100%;
+      background: #fff;
+      z-index: 9999;
+      padding: 0;
+      box-shadow: -8px 0 40px rgba(0,0,0,.18);
+      transition: right .32s cubic-bezier(.16,1,.3,1);
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto
+    }
+    .mobile-nav-drawer.open { right: 0 }
+    .mnd-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 18px 20px;
+      border-bottom: 1px solid var(--border)
+    }
+    .mnd-links {
+      display: flex;
+      flex-direction: column;
+      padding: 12px 0
+    }
+    .mnd-links a {
+      padding: 14px 20px;
+      font-weight: 700;
+      font-size: .95rem;
+      color: var(--body);
+      border-bottom: 1px solid var(--border);
+      cursor: pointer;
+      transition: background .15s
+    }
+    .mnd-links a:hover { background: var(--blue-50); color: var(--blue) }
+    .mnd-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      padding: 20px
+    }
+    .mnd-actions .btn, .mnd-actions .btn-aikey { width: 100%; justify-content: center }
+
+    /* ═══ FEATURED TEMPLATES ════════════════════════════════════ */
+    .featured-tpl-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin-bottom: 28px
+    }
+    @media(max-width:900px) {
+      .featured-tpl-grid { grid-template-columns: repeat(2, 1fr) }
+    }
+    @media(max-width:480px) {
+      .featured-tpl-grid { grid-template-columns: 1fr 1fr; gap: 10px }
+    }
+    .browse-all-cta {
+      background: linear-gradient(135deg, var(--blue-50), #F0FDF4);
+      border: 1.5px solid var(--blue-100);
+      border-radius: 16px;
+      padding: 22px 28px
+    }
+    .browse-all-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      flex-wrap: wrap
+    }
+    .browse-all-text {
+      display: flex;
+      align-items: center;
+      gap: 18px
+    }
+    .browse-all-count {
+      font-family: 'Sora', sans-serif;
+      font-size: 2.2rem;
+      font-weight: 800;
+      color: var(--blue);
+      line-height: 1
+    }
+
+    /* ═══ MOBILE IMPROVEMENTS ═══════════════════════════════════ */
+    @media(max-width:900px) {
+      .featured-tpl-grid { grid-template-columns: repeat(2, 1fr) }
+    }
+
+    @media(max-width:768px) {
+      /* Hamburger & Nav */
+      .hamburger { display: flex }
+      .nav-links { display: none !important }
+      .nav-cta .btn-aikey,
+      .nav-cta .btn-outline,
+      .nav-cta .btn-primary { display: none }
+
+      /* Landing page */
+      .hero { padding: 48px 1.2rem 60px }
+      .hero-grid { grid-template-columns: 1fr; text-align: center; gap: 36px }
+      .hero-visual { display: none }
+      .hero-actions { justify-content: center; flex-direction: column; align-items: center }
+      .hero-actions .btn { width: 100%; max-width: 320px; justify-content: center }
+      .hero-trust { justify-content: center }
+      .hero-title { font-size: clamp(1.85rem, 7.5vw, 2.8rem) }
+      .hero-sub { font-size: .95rem; margin-bottom: 24px }
+      .stats-inner { gap: 24px 32px }
+      .stat-num { font-size: 1.35rem }
+      .sec-title { font-size: clamp(1.5rem, 5.5vw, 2rem) }
+      .section { padding: 52px 1.2rem }
+      .import-banner { flex-direction: column; text-align: center; gap: 14px; padding: 18px }
+      .import-banner-btn { width: 100%; justify-content: center }
+      .featured-tpl-grid { grid-template-columns: repeat(2, 1fr); gap: 12px }
+      .browse-all-inner { flex-direction: column; text-align: center }
+      .browse-all-text { justify-content: center }
+      .browse-all-cta { padding: 20px 16px }
+      .feat-grid { grid-template-columns: 1fr; gap: 14px }
+      .testi-grid { grid-template-columns: 1fr }
+      .footer-top { flex-direction: column; gap: 28px }
+      .footer-col { min-width: 0 }
+      .cta-band { padding: 60px 1.2rem }
+      .cta-band h2 { font-size: 1.75rem }
+      .policy-page { padding: 28px 1rem 60px }
+
+      /* Gallery modal */
+      #fullGalleryModal .modal-box { border-radius: 18px 18px 0 0; max-height: 96vh }
+      .gallery-bar { flex-direction: column; gap: 10px }
+      .filter-row { overflow-x: auto; padding-bottom: 4px; flex-wrap: nowrap }
+      .filter-row::-webkit-scrollbar { height: 3px }
+      .filter-row::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px }
+      .search-wrap { width: 100% }
+    }
+
+    @media(max-width:480px) {
+      .hamburger { display: flex }
+      .hero-title { font-size: 1.75rem }
+      .featured-tpl-grid { grid-template-columns: repeat(2, 1fr); gap: 10px }
+      .tpl-grid { grid-template-columns: repeat(2, 1fr) }
+      .feat-grid { grid-template-columns: 1fr }
+      .testi-grid { grid-template-columns: 1fr }
+      input, textarea, select { font-size: 16px !important }
+      .top-bar { padding: 6px 10px }
+      .nav-inner { padding: 0 1rem }
+    }
+
+    @media(max-width:360px) {
+      .featured-tpl-grid { grid-template-columns: 1fr }
+      .hero-actions .btn { font-size: .85rem }
+    }
+
+    /* ═══ GLOBAL TAP/FOCUS FIX — Remove black tap highlight everywhere ════════ */
+    * { -webkit-tap-highlight-color: transparent !important }
+    button:focus, button:active, a:focus, a:active,
+    [tabindex]:focus { outline: none !important; box-shadow: none !important }
+    button:focus-visible { outline: 2px solid var(--blue-lt) !important; outline-offset: 2px !important }
+
+    /* ═══ MOBILE: Builder header — hide Cover/Export/PDF (in footer) ════════ */
+    @media(max-width:768px) {
+      #builderCoverBtn, #builderExportBtn, #builderPdfBtn { display: none !important }
+      #clGenerateBtn, #clTxtBtn, #clPdfBtn { display: none !important }
+    }
+
+    /* ═══ COVER LETTER STICKY FOOTER (mobile) — JS-controlled visibility ═══ */
+    /* display controlled by JS showView() — CSS only sets layout when shown */
+    .cl-action-footer {
+      display: none;   /* default: hidden — JS sets to flex only on cover+mobile */
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      height: 62px;
+      background: #fff;
+      border-top: 1.5px solid var(--border);
+      z-index: 298;
+      align-items: stretch;
+      box-shadow: 0 -3px 18px rgba(27,79,216,.10)
+    }
+    @media(max-width:768px) {
+      #view-cover.active { padding-bottom: 62px }
+    }
+    .cl-action-footer .caf-btn {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 3px;
+      background: none;
+      border: none;
+      outline: none;
+      font-family: 'Sora', sans-serif;
+      font-size: .6rem;
+      font-weight: 700;
+      color: var(--muted);
+      cursor: pointer;
+      padding: 5px 4px;
+      transition: color .18s, background .18s;
+      -webkit-tap-highlight-color: transparent
+    }
+    .cl-action-footer .caf-btn:hover,
+    .cl-action-footer .caf-btn:active { color: var(--blue); background: var(--blue-50) }
+    .cl-action-footer .caf-btn.caf-generate {
+      flex: 1.7;
+      background: linear-gradient(135deg,#5B21B6,#7C3AED);
+      color: #fff
+    }
+    .cl-action-footer .caf-btn.caf-generate:hover { opacity: .9 }
+    .cl-action-footer .caf-divider {
+      width: 1px; background: var(--border); margin: 10px 0; flex-shrink: 0
+    }
+
   </style>
 </head>
 
@@ -4502,10 +4789,10 @@
             </svg></div>
           <span class="logo-text">Resume<span>Forge</span></span>
         </div>
-        <ul class="nav-links">
-          <li><a onclick="scrollToSection('templates')">Templates</a></li>
-          <li><a onclick="scrollToSection('features')">Features</a></li>
-          <li><a onclick="scrollToSection('how-it-works')">How It Works</a></li>
+        <ul class="nav-links" id="navLinks">
+          <li><a onclick="scrollToSection('templates');closeMobileNav()">Templates</a></li>
+          <li><a onclick="scrollToSection('features');closeMobileNav()">Features</a></li>
+          <li><a onclick="scrollToSection('how-it-works');closeMobileNav()">How It Works</a></li>
         </ul>
         <div class="nav-cta">
           <button class="btn-aikey" id="navKeyBtn" onclick="openAPIKeyModal()">
@@ -4523,9 +4810,12 @@
             </svg>
             Build My Resume
           </button>
+          <button class="hamburger" onclick="toggleMobileNav()" aria-label="Menu">
+            <span></span><span></span><span></span>
+          </button>
         </div>
       </div>
-    </nav>
+        </nav>
 
     <section class="hero">
       <div class="hero-grid">
@@ -4559,7 +4849,7 @@
           <div class="resume-card">
             <div class="rc-head">
               <div class="rc-name">Ahmad Raza</div>
-              <div class="rc-role">Senior Product Designer &nbsp;·&nbsp; Bahawalpur, PK</div>
+              <div class="rc-role">Senior Software Engineer &nbsp;·&nbsp; Bahawalpur, PK</div>
             </div>
             <div class="rc-body">
               <div class="rc-sec">Professional Summary</div>
@@ -4670,37 +4960,65 @@
           <h2 class="sec-title">115+ Templates for Every Career</h2>
           <p class="sec-sub">From entry-level to executive — every template is ATS-tested and recruiter-approved.</p>
         </div>
-        <div class="gallery-bar">
-          <div class="filter-row" id="filterRow">
-            <button class="ftab on" data-cat="all">All (115)</button>
-            <button class="ftab" data-cat="modern">Modern</button>
-            <button class="ftab" data-cat="classic">Classic</button>
-            <button class="ftab" data-cat="creative">Creative</button>
-            <button class="ftab" data-cat="executive">Executive</button>
-            <button class="ftab" data-cat="tech">Tech / IT</button>
-            <button class="ftab" data-cat="ats">ATS Pure</button>
-            <button class="ftab" data-cat="academic">Academic</button>
+        <!-- Featured Templates (6 shown) -->
+        <div class="featured-tpl-grid fade-up" id="featuredTplGrid"></div>
+        <!-- Browse All CTA -->
+        <div class="browse-all-cta fade-up">
+          <div class="browse-all-inner">
+            <div class="browse-all-text">
+              <span class="browse-all-count">115+</span>
+              <div>
+                <div style="font-family:'Sora',sans-serif;font-weight:800;font-size:1.05rem;color:var(--dark)">Professional templates available</div>
+                <div style="font-size:.875rem;color:var(--muted);margin-top:3px">Modern, Classic, Executive, Tech, ATS-optimized &amp; more</div>
+              </div>
+            </div>
+            <button class="btn btn-primary btn-lg" onclick="openFullTemplateGallery()">
+              <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/>
+                <rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>
+              </svg>
+              Browse All Templates
+            </button>
           </div>
-          <div class="search-wrap">
-            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-              <circle cx="11" cy="11" r="8" />
-              <path d="m21 21-4.35-4.35" />
-            </svg>
-            <input type="text" id="tplSearch" placeholder="Search templates...">
-          </div>
-        </div>
-        <div class="res-count" id="resCount">Showing all 115 templates</div>
-        <div class="tpl-grid" id="tplGrid"></div>
-        <div class="no-results" id="noResults">
-          <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"
-            style="width:40px;height:40px;margin:0 auto 10px;display:block;opacity:.3">
-            <circle cx="11" cy="11" r="8" />
-            <path d="m21 21-4.35-4.35" />
-          </svg>
-          <p>No templates found.</p>
         </div>
       </div>
     </section>
+
+    <!-- Full Template Gallery Modal -->
+    <div class="modal-overlay" id="fullGalleryModal" onclick="if(event.target===this)closeFullTemplateGallery()">
+      <div class="modal-box" style="max-width:1100px;width:96vw">
+        <div class="modal-head">
+          <h3>All Templates</h3>
+          <button class="modal-x" onclick="closeFullTemplateGallery()">&times;</button>
+        </div>
+        <div class="modal-body" style="padding:14px 16px">
+          <div class="gallery-bar" style="margin-bottom:14px">
+            <div class="filter-row" id="filterRow">
+              <button class="ftab on" data-cat="all">All (115)</button>
+              <button class="ftab" data-cat="modern">Modern</button>
+              <button class="ftab" data-cat="classic">Classic</button>
+              <button class="ftab" data-cat="creative">Creative</button>
+              <button class="ftab" data-cat="executive">Executive</button>
+              <button class="ftab" data-cat="tech">Tech</button>
+              <button class="ftab" data-cat="ats">ATS</button>
+              <button class="ftab" data-cat="academic">Academic</button>
+            </div>
+            <div class="search-wrap">
+              <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+              </svg>
+              <input type="text" id="tplSearch" placeholder="Search templates...">
+            </div>
+          </div>
+          <div class="res-count" id="resCount">Showing all 115 templates</div>
+          <div class="tpl-grid" id="tplGrid"></div>
+          <div class="no-results" id="noResults">
+            <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" style="width:40px;height:40px;margin:0 auto 10px;display:block;opacity:.3"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+            <p>No templates found.</p>
+          </div>
+        </div>
+      </div>
+    </div>
 
     <section class="section features" id="features">
       <div class="container">
@@ -4889,9 +5207,12 @@
         </div>
         <div class="nav-cta">
           <button class="btn btn-primary" onclick="showView('builder')">Build Resume</button>
+          <button class="hamburger" onclick="toggleMobileNav()" aria-label="Menu">
+            <span></span><span></span><span></span>
+          </button>
         </div>
       </div>
-    </nav>
+        </nav>
     <div class="policy-page">
       <button class="policy-back" onclick="showView('landing')">
         <svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
@@ -5013,9 +5334,12 @@
         </div>
         <div class="nav-cta">
           <button class="btn btn-primary" onclick="showView('builder')">Build Resume</button>
+          <button class="hamburger" onclick="toggleMobileNav()" aria-label="Menu">
+            <span></span><span></span><span></span>
+          </button>
         </div>
       </div>
-    </nav>
+        </nav>
     <div class="policy-page">
       <button class="policy-back" onclick="showView('landing')">
         <svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
@@ -5191,22 +5515,12 @@
       <div class="tb-right">
         <button class="btn-sm-aikey" id="builderKeyBtn" onclick="openAPIKeyModal()">
           <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="13" height="13">
-            <path
-              d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4" />
+            <path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4" />
           </svg>
           <span id="builderKeyLabel">AI Key</span>
-          <span id="builderKeyDot"
-            style="width:7px;height:7px;border-radius:50%;background:#DC2626;flex-shrink:0"></span>
+          <span id="builderKeyDot" style="width:7px;height:7px;border-radius:50%;background:#DC2626;flex-shrink:0"></span>
         </button>
-        <button class="btn-sm"
-          style="background:linear-gradient(135deg,#EDE9FE,#DDD6FE);border:1.5px solid #A78BFA;color:#5B21B6"
-          onclick="openAIPanel('write')">
-          <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-            <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
-          </svg>
-          <span>AI Writer</span>
-        </button>
-        <button class="btn-sm btn-ghost" onclick="showView('cover')">
+        <button id="builderCoverBtn" class="btn-sm btn-ghost" onclick="showView('cover')">
           <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
             <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
             <polyline points="14 2 14 8 20 8" />
@@ -5215,21 +5529,18 @@
         </button>
         <button class="btn-sm btn-ghost" onclick="openShareModal()">
           <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-            <circle cx="18" cy="5" r="3" />
-            <circle cx="6" cy="12" r="3" />
-            <circle cx="18" cy="19" r="3" />
-            <line x1="8.59" y1="13.51" x2="15.42" y2="17.49" />
-            <line x1="15.41" y1="6.51" x2="8.59" y2="10.49" />
+            <circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/>
+            <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/>
           </svg>
           <span>Share</span>
         </button>
-        <button class="btn-sm btn-outline-blue" onclick="openExportModal()">
+        <button id="builderExportBtn" class="btn-sm btn-outline-blue" onclick="openExportModal()">
           <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
             <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3" />
           </svg>
           <span>Export</span>
         </button>
-        <button class="btn-sm btn-blue" onclick="downloadPDF()">
+        <button id="builderPdfBtn" class="btn-sm btn-blue" onclick="downloadPDF()">
           <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
             <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3" />
           </svg>
@@ -5238,19 +5549,7 @@
       </div>
     </header>
 
-    <button class="ats-fab-mobile" onclick="openATSModal()">
-      <div style="position:relative;width:20px;height:20px;flex-shrink:0">
-        <svg viewBox="0 0 34 34" style="width:20px;height:20px;transform:rotate(-90deg)">
-          <circle fill="none" stroke="#DBEAFE" stroke-width="3" cx="17" cy="17" r="14" />
-          <circle fill="none" stroke="var(--blue)" stroke-width="3" stroke-linecap="round" stroke-dasharray="88"
-            id="atsRingMob" stroke-dashoffset="88" cx="17" cy="17" r="14"
-            style="transition:stroke-dashoffset .8s ease" />
-        </svg>
-        <span id="atsNumMob"
-          style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:'Sora',sans-serif;font-weight:800;font-size:.5rem;color:var(--blue)">0</span>
-      </div>
-      ATS Score
-    </button>
+    <!-- ats-fab-mobile removed - ATS is in tools bar -->
 
     <div class="builder-tab-bar" id="builderTabBar">
       <button class="builder-tab active" id="btab-form" onclick="switchBuilderTab('form')">Edit Resume</button>
@@ -5262,14 +5561,23 @@
         <div class="left-panel-head">
           <div class="lph-top">
             <span class="lph-title">Resume Sections</span>
-            <button class="import-btn-small" onclick="openImportModal()">
-              <svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
-                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-                <polyline points="17 8 12 3 7 8" />
-                <line x1="12" y1="3" x2="12" y2="15" />
-              </svg>
-              Import Resume
-            </button>
+            <div style="display:flex;gap:6px;align-items:center">
+              <button class="import-btn-small lph-change-tpl-btn" onclick="openTplModal()" title="Change Template">
+                <svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" width="12" height="12">
+                  <rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/>
+                  <rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>
+                </svg>
+                Template
+              </button>
+              <button class="import-btn-small" onclick="openImportModal()">
+                <svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" width="12" height="12">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                  <polyline points="17 8 12 3 7 8" />
+                  <line x1="12" y1="3" x2="12" y2="15" />
+                </svg>
+                Import
+              </button>
+            </div>
           </div>
           <div class="progress-bar-wrap">
             <div class="progress-bar-fill" id="progressFill" style="width:0%"></div>
@@ -5306,32 +5614,67 @@
       </div>
     </div>
 
+    <!-- STICKY TOOLS BAR (AI Writer, ATS, Checklist) -->
+    <div class="mobile-tools-bar" id="mobileToolsBar">
+      <button class="mtb-btn" onclick="openAIPanel('write')">
+        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="18" height="18">
+          <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+        </svg>
+        <span>AI Writer</span>
+      </button>
+      <div class="mtb-divider"></div>
+      <button class="mtb-btn" onclick="openATSModal()">
+        <div class="mtb-ats-ring">
+          <svg viewBox="0 0 34 34" width="22" height="22" style="transform:rotate(-90deg)">
+            <circle fill="none" stroke="#DBEAFE" stroke-width="3" cx="17" cy="17" r="14"/>
+            <circle fill="none" id="atsRingMob" stroke="var(--blue)" stroke-width="3" stroke-linecap="round"
+              stroke-dasharray="88" stroke-dashoffset="88" cx="17" cy="17" r="14"
+              style="transition:stroke-dashoffset .8s ease"/>
+          </svg>
+          <span id="atsNumMob" class="mtb-ats-num">0</span>
+        </div>
+        <span>ATS Score</span>
+      </button>
+      <div class="mtb-divider"></div>
+      <button class="mtb-btn" onclick="toggleChecklist()">
+        <div style="position:relative;display:inline-flex">
+          <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="18" height="18">
+            <polyline points="9 11 12 14 22 4"/>
+            <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
+          </svg>
+          <span class="cl-dot" id="checklistDot" style="position:absolute;top:-6px;right:-8px;min-width:15px;height:15px;font-size:.55rem;display:none">0</span>
+        </div>
+        <span>Checklist</span>
+      </button>
+    </div>
+
+    <!-- STICKY NAV BAR (Edit | Preview | Cover Letter | Export | PDF) -->
     <div class="mobile-bottom-bar">
       <button class="mbb-btn active" id="mbb-form" onclick="switchBuilderTab('form')">
         <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-          <path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z" />
+          <path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/>
         </svg>Edit
       </button>
       <button class="mbb-btn" id="mbb-prev" onclick="switchBuilderTab('preview')">
         <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-          <rect x="2" y="3" width="20" height="14" rx="2" />
-          <path d="M8 21h8M12 17v4" />
+          <rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/>
         </svg>Preview
       </button>
-      <button class="mbb-btn" onclick="openAIPanel('write')">
+      <button class="mbb-btn" onclick="showView('cover')">
         <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-          <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
-        </svg>AI Write
-      </button>
-      <button class="mbb-btn" onclick="openATSModal()">
-        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-          <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
-        </svg>ATS
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+          <polyline points="14 2 14 8 20 8"/>
+        </svg>Cover
       </button>
       <button class="mbb-btn" onclick="openExportModal()">
         <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3" />
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/>
         </svg>Export
+      </button>
+      <button class="mbb-btn" onclick="downloadPDF()">
+        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/>
+        </svg>PDF
       </button>
     </div>
   </div><!-- /view-builder -->
@@ -5347,13 +5690,13 @@
           <svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
             <polyline points="15 18 9 12 15 6" />
           </svg>
-          Resume Builder
+          <span class="cl-back-label">Resume Builder</span>
         </button>
         <div class="tb-sep"></div>
-        <span style="font-family:'Sora',sans-serif;font-weight:800;font-size:.92rem;color:var(--dark)">Cover Letter
-          Builder</span>
-        <span
-          style="background:linear-gradient(135deg,#EDE9FE,#DDD6FE);color:#5B21B6;padding:2px 9px;border-radius:100px;font-size:.68rem;font-weight:700;font-family:'Sora',sans-serif">AI-Powered</span>
+        <div class="cl-title-group">
+          <span class="cl-title-text">Cover Letter Builder</span>
+          <span class="cl-ai-badge">AI-Powered</span>
+        </div>
       </div>
       <div class="tb-right">
         <button class="btn-sm-aikey" id="clKeyBtn" onclick="openAPIKeyModal()">
@@ -5364,20 +5707,20 @@
           <span id="clKeyLabel">AI Key</span>
           <span id="clKeyDot" style="width:7px;height:7px;border-radius:50%;background:#DC2626;flex-shrink:0"></span>
         </button>
-        <button class="btn-sm" style="background:linear-gradient(135deg,#5B21B6,#7C3AED);color:#fff;border:none"
+        <button id="clGenerateBtn" class="btn-sm" style="background:linear-gradient(135deg,#5B21B6,#7C3AED);color:#fff;border:none"
           onclick="openCLAIPanel()">
           <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
             <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
           </svg>
           <span>Generate Full Letter</span>
         </button>
-        <button class="btn-sm btn-ghost" onclick="clDownloadTXT()">
+        <button id="clTxtBtn" class="btn-sm btn-ghost" onclick="clDownloadTXT()">
           <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
             <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3" />
           </svg>
           <span>TXT</span>
         </button>
-        <button class="btn-sm btn-blue" onclick="downloadPDF()">
+        <button id="clPdfBtn" class="btn-sm btn-blue" onclick="downloadPDF()">
           <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
             <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3" />
           </svg>
@@ -5671,6 +6014,31 @@
       </div>
 
     </div><!-- /builder-body -->
+
+    <!-- ═══ COVER LETTER STICKY FOOTER (mobile, JS-controlled) ══════════ -->
+    <div class="cl-action-footer" id="clActionFooter">
+      <button class="caf-btn caf-generate" onclick="openCLAIPanel()">
+        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="18" height="18">
+          <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+        </svg>
+        Generate Letter
+      </button>
+      <div class="caf-divider"></div>
+      <button class="caf-btn" onclick="clDownloadTXT()">
+        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="18" height="18">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/>
+        </svg>
+        TXT
+      </button>
+      <div class="caf-divider"></div>
+      <button class="caf-btn" style="color:var(--blue)" onclick="downloadPDF()">
+        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="18" height="18">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/>
+        </svg>
+        PDF
+      </button>
+    </div>
+
   </div><!-- /view-cover -->
 
   <!-- ═══════════════════════════════════════════════════════════
@@ -5962,15 +6330,7 @@
     </div>
   </div>
 
-  <!-- CHECKLIST -->
-  <button class="checklist-btn" id="checklistBtn" style="display:none" onclick="toggleChecklist()">
-    <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-      <polyline points="9 11 12 14 22 4" />
-      <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" />
-    </svg>
-    <span>Checklist</span>
-    <div class="cl-dot" id="checklistDot">0</div>
-  </button>
+  <!-- CHECKLIST POPUP (button moved to sticky toolbar) -->
   <div class="checklist-popup" id="checklistPopup">
     <div class="clist-head">Resume Checklist<span class="clist-progress" id="checklistProgress">0/8</span></div>
     <div id="checklistItems"></div>
@@ -6012,28 +6372,28 @@
       <div class="import-modal-body">
         <div id="keyActiveBanner"
           style="display:none;background:#F0FDF4;border:1.5px solid #86EFAC;border-radius:9px;padding:11px 15px;margin-bottom:14px;font-size:.83rem;color:#065F46;font-weight:700;display:none">
-          ✓ AI Key active hai — sab features kaam kar rahe hain!
+          ✓ Your AI Key is active — all features are enabled!
         </div>
         <div
           style="background:linear-gradient(135deg,#EFF6FF,#F0FDF4);border:1.5px solid #BFDBFE;border-radius:11px;padding:16px 18px;margin-bottom:16px">
           <div style="font-size:.82rem;font-weight:800;color:#1B4FD8;font-family:'Sora',sans-serif;margin-bottom:11px">
-            Bilkul Free — 1 minute mein ready:</div>
+            100% Free — Ready in 1 minute:</div>
           <div style="display:flex;flex-direction:column;gap:9px">
             <div style="display:flex;align-items:center;gap:11px;font-size:.81rem;color:#1E293B">
               <span
                 style="width:22px;height:22px;background:#1B4FD8;color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.72rem;flex-shrink:0">1</span>
-              <span>Jao: <a href="https://aistudio.google.com/apikey" target="_blank"
+              <span>Go to: <a href="https://aistudio.google.com/apikey" target="_blank"
                   style="color:#1B4FD8;font-weight:700;text-decoration:underline">aistudio.google.com/apikey</a></span>
             </div>
             <div style="display:flex;align-items:center;gap:11px;font-size:.81rem;color:#1E293B">
               <span
                 style="width:22px;height:22px;background:#1B4FD8;color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.72rem;flex-shrink:0">2</span>
-              <span>Gmail se login → <strong>"Create API Key"</strong> dabao → Copy karo</span>
+              <span>Sign in with Gmail → Click <strong>"Create API Key"</strong> → Copy the key</span>
             </div>
             <div style="display:flex;align-items:center;gap:11px;font-size:.81rem;color:#1E293B">
               <span
                 style="width:22px;height:22px;background:#059669;color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.72rem;flex-shrink:0">3</span>
-              <span>Neeche paste karo → Save dabao → Done!</span>
+              <span>Paste it below → Click Save → Done!</span>
             </div>
           </div>
           <div
@@ -6048,7 +6408,7 @@
           placeholder="AIzaSy..." onfocus="this.style.borderColor='var(--blue)'"
           onblur="this.style.borderColor='var(--border)'" onkeydown="if(event.key==='Enter')saveAPIKey()">
         <div id="apiKeyError" style="display:none;font-size:.78rem;color:#DC2626;margin-bottom:6px">✗ Key too short —
-          Google key AIzaSy... se shuru hoti hai</div>
+          Google key should start with AIzaSy...</div>
         <div style="display:flex;gap:8px;margin-top:7px">
           <button onclick="saveAPIKey()"
             style="flex:1;padding:11px;border-radius:8px;border:none;background:var(--blue);color:#fff;font-family:'Sora',sans-serif;font-weight:700;font-size:.88rem;cursor:pointer;transition:background .2s"
@@ -6059,8 +6419,7 @@
         </div>
         <div
           style="margin-top:12px;padding:9px 12px;background:#F8FAFF;border:1px solid var(--border);border-radius:8px;font-size:.75rem;color:var(--muted);line-height:1.5">
-          🔒 Key sirf aapke browser mein save hoti hai — Google ke servers pe directly jati hai, kisi aur server se nahi
-          guzarti.
+          🔒 Your key is stored only in your browser — it goes directly to Google's servers. We never see or store it.
         </div>
       </div>
     </div>
@@ -6076,13 +6435,27 @@
       document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
       const el = document.getElementById('view-' + name);
       if (el) el.classList.add('active');
+      const isMobile = window.innerWidth <= 768;
+      // ── JS controls ALL fixed bars to prevent Chrome position:fixed/display:none bug ──
+      // Tools bar: builder only
+      const toolsBar = document.getElementById('mobileToolsBar');
+      if (toolsBar) toolsBar.style.display = (name === 'builder' && isMobile) ? 'flex' : 'none';
+      // Bottom nav bar: builder only
+      const bottomBar = document.querySelector('#view-builder .mobile-bottom-bar');
+      if (bottomBar) bottomBar.style.display = (name === 'builder' && isMobile) ? 'flex' : 'none';
+      // CL action footer: cover only
+      const clFooter = document.getElementById('clActionFooter');
+      if (clFooter) clFooter.style.display = (name === 'cover' && isMobile) ? 'flex' : 'none';
+      // Keep FAB hidden (replaced by tools bar)
       const fab = document.getElementById('aiFab');
+      if (fab) fab.style.display = 'none';
       const cl = document.getElementById('checklistBtn');
-      if (fab) fab.style.display = (name === 'builder') ? 'flex' : 'none';
-      if (cl) cl.style.display = (name === 'builder') ? 'flex' : 'none';
+      if (cl) cl.style.display = 'none';
       if (name === 'builder') { renderPreview(); updateATS(); updateProgress(); autoZoom(); }
       if (name === 'cover') { clUpdate(); renderCLPreview(); autoZoom(); }
       if (name === 'landing') { initScrollAnimations(); }
+      // Apply body class for mobile padding (only builder/cover need bottom bar padding)
+      document.body.classList.toggle('builder-active', name === 'builder' || name === 'cover');
       updateKeyStatus();
       window.scrollTo(0, 0);
     }
@@ -6167,6 +6540,14 @@
       const _ki = document.getElementById('apiKeyInput');
       if (_k && _ki) _ki.value = _k;
       updateKeyStatus();
+      // ── Hide ALL fixed bars on initial load (landing page default) ──
+      const _isMob = window.innerWidth <= 768;
+      const _toolsBar = document.getElementById('mobileToolsBar');
+      if (_toolsBar) _toolsBar.style.display = 'none';
+      const _bottomBar = document.querySelector('#view-builder .mobile-bottom-bar');
+      if (_bottomBar) _bottomBar.style.display = 'none';
+      const _clFooter = document.getElementById('clActionFooter');
+      if (_clFooter) _clFooter.style.display = 'none';
     };
 
     // ═══════════════════════════════════════════════════════════════
@@ -6242,18 +6623,18 @@
       const line = (w, clr, mb = 3, h = 3) => `<div style="height:${h}px;background:${clr};border-radius:1px;width:${w};margin-bottom:${mb}px;"></div>`;
       const sh = () => `<div style="height:1px;background:${g};margin-bottom:5px;"></div>`;
       const L = {
-        'classic': `<div style="height:215px;overflow:hidden;background:#fff;display:flex;flex-direction:column;"><div style="background:${c};padding:14px 13px 12px;">${line('56%', 'rgba(255,255,255,.92)', 4, 9)}${line('38%', 'rgba(255,255,255,.5)', 0, 5)}</div><div style="padding:9px 13px;flex:1;">${line('32%', c, 3)}${sh()}${line('100%', g)}${line('82%', g)}${line('68%', g, 7)}${line('32%', c, 3)}${sh()}${line('100%', g)}${line('78%', g, 0)}</div></div>`,
-        'sidebar-l': `<div style="display:flex;height:215px;overflow:hidden;"><div style="width:36%;background:${c};padding:11px 8px;">${line('100%', 'rgba(255,255,255,.22)', 5, 28)}${['80%', '60%', '75%', '55%', '65%', '45%', '70%'].map(w => `<div style="height:3px;background:rgba(255,255,255,.42);border-radius:1px;width:${w};margin-bottom:5px;"></div>`).join('')}</div><div style="flex:1;padding:10px 9px;background:#fff;">${line('68%', c, 4, 8)}${line('44%', g, 8, 4)}${line('38%', c, 4)}${line('100%', g)}${line('80%', g)}${line('88%', g, 7)}${line('38%', c, 4)}${line('100%', g)}${line('74%', g, 0)}</div></div>`,
-        'sidebar-r': `<div style="display:flex;flex-direction:row-reverse;height:215px;overflow:hidden;"><div style="width:33%;background:${c};padding:11px 8px;">${['80%', '60%', '75%', '55%', '65%', '45%'].map(w => `<div style="height:3px;background:rgba(255,255,255,.42);border-radius:1px;width:${w};margin-bottom:5px;"></div>`).join('')}</div><div style="flex:1;padding:10px 9px;background:#fff;">${line('68%', c, 4, 8)}${line('44%', g, 8, 4)}${line('38%', c, 4)}${line('100%', g)}${line('80%', g)}${line('88%', g, 7)}${line('38%', c, 4)}${line('95%', g, 0)}</div></div>`,
-        'two-col': `<div style="height:215px;overflow:hidden;background:#fff;display:flex;flex-direction:column;"><div style="background:${c};padding:11px 13px;">${line('58%', 'rgba(255,255,255,.92)', 3, 9)}${line('40%', 'rgba(255,255,255,.55)', 0, 4)}</div><div style="display:flex;flex:1;"><div style="flex:1;padding:7px 6px 7px 11px;border-right:1px solid ${g};">${line('55%', c, 4, 3)}${line('100%', g)}${line('82%', g)}${line('90%', g, 7)}${line('55%', c, 4, 3)}${line('95%', g, 0)}</div><div style="flex:1;padding:7px 11px 7px 6px;">${line('55%', c, 4, 3)}${line('100%', g)}${line('78%', g, 7)}${line('55%', c, 4, 3)}${['82%', '68%', '90%'].map(w => `<div style="height:3px;background:${g};border-radius:1px;margin-bottom:3px;overflow:hidden;"><div style="height:100%;width:${w};background:${c};opacity:.5;"></div></div>`).join('')}</div></div></div>`,
-        'executive': `<div style="height:215px;overflow:hidden;background:#fff;display:flex;flex-direction:column;"><div style="background:${c};padding:16px 13px 12px;">${line('62%', 'rgba(255,255,255,.95)', 4, 11)}${line('44%', 'rgba(255,255,255,.6)', 3, 5)}<div style="height:1px;background:rgba(255,255,255,.2);margin:5px 0;"></div></div><div style="padding:9px 13px;flex:1;">${line('38%', c, 3)}${sh()}${line('100%', g)}${line('88%', g)}${line('72%', g, 7)}${line('38%', c, 3)}${sh()}${line('100%', g)}${line('90%', g, 0)}</div></div>`,
-        'minimal': `<div style="height:215px;overflow:hidden;background:#fff;padding:14px;">${line('52%', '#1E293B', 3, 9)}${line('37%', '#94A3B8', 2, 4)}${line('26%', c, 7, 3)}<div style="height:1px;background:${g};margin-bottom:7px;opacity:.5;"></div>${line('28%', '#64748B', 4)}${line('100%', g)}${line('84%', g)}${line('90%', g, 8)}<div style="height:1px;background:${g};margin-bottom:7px;"></div>${line('28%', '#64748B', 4)}${line('100%', g)}${line('76%', g, 0)}</div>`,
-        'tech': `<div style="height:215px;overflow:hidden;background:#F8FAFF;display:flex;flex-direction:column;"><div style="background:#0F172A;padding:12px;display:flex;align-items:center;gap:7px;"><div style="width:20px;height:20px;border-radius:4px;background:${c};flex-shrink:0;"></div><div style="flex:1;">${line('52%', 'rgba(255,255,255,.85)', 3, 7)}${line('36%', 'rgba(255,255,255,.45)', 0, 3)}</div></div><div style="padding:8px 10px;flex:1;background:#fff;">${line('35%', c, 4)}${line('100%', g)}${line('84%', g)}${line('70%', g, 7)}${line('35%', c, 4)}${line('100%', g)}${line('78%', g, 0)}</div></div>`,
-        'creative': `<div style="height:215px;overflow:hidden;background:#fff;position:relative;"><div style="position:absolute;top:0;left:0;right:0;height:62px;background:${c};clip-path:polygon(0 0,100% 0,100% 62%,0 100%);"></div><div style="position:relative;padding:12px 13px 0;">${line('52%', 'rgba(255,255,255,.94)', 3, 8)}${line('36%', 'rgba(255,255,255,.58)', 0, 4)}</div><div style="padding:36px 13px 9px;">${line('35%', c, 4)}${line('100%', g)}${line('80%', g)}${line('90%', g, 7)}${line('35%', c, 4)}${line('95%', g, 0)}</div></div>`,
-        'timeline': `<div style="height:215px;overflow:hidden;background:#fff;display:flex;flex-direction:column;"><div style="background:${c};padding:11px 13px;">${line('54%', 'rgba(255,255,255,.92)', 3, 8)}${line('38%', 'rgba(255,255,255,.52)', 0, 4)}</div><div style="flex:1;padding:8px 13px;position:relative;"><div style="position:absolute;left:20px;top:8px;bottom:8px;width:1px;background:${g};"></div>${[['60%', '100%'], ['54%', '95%'], ['48%', '88%']].map(([a, b]) => `<div style="display:flex;gap:8px;align-items:flex-start;margin-bottom:8px;"><div style="width:7px;height:7px;border-radius:50%;background:${c};flex-shrink:0;margin-top:2px;z-index:1;"></div><div style="flex:1;">${line(a, c, 3, 4)}${line(b, g, 0)}</div></div>`).join('')}</div></div>`,
-        'header-bar': `<div style="height:215px;overflow:hidden;background:#fff;display:flex;flex-direction:column;"><div style="background:${c};padding:12px 13px 9px;">${line('58%', 'rgba(255,255,255,.92)', 3, 8)}${line('40%', 'rgba(255,255,255,.55)', 2, 4)}</div><div style="height:3px;background:${c};width:28%;margin-left:13px;opacity:.5;border-radius:0 0 2px 2px;"></div><div style="padding:7px 13px;flex:1;">${line('35%', c, 4)}${line('100%', g)}${line('84%', g)}${line('72%', g, 7)}${line('35%', c, 4)}${line('100%', g)}${line('78%', g, 0)}</div></div>`,
-        'academic': `<div style="height:215px;overflow:hidden;background:#fff;padding:13px;display:flex;flex-direction:column;align-items:center;">${line('52%', c, 3, 9)}${line('36%', '#94A3B8', 2, 4)}<div style="height:1px;background:${c};width:55%;margin-bottom:6px;opacity:.4;"></div><div style="width:100%;">${line('32%', c, 3)}${sh()}${line('100%', g)}${line('80%', g)}${line('90%', g, 7)}${line('32%', c, 3)}${sh()}${line('95%', g, 0)}</div></div>`,
-        'infographic': `<div style="display:flex;height:215px;overflow:hidden;"><div style="width:38%;background:${c};padding:10px 8px;display:flex;flex-direction:column;align-items:center;gap:4px;"><div style="width:28px;height:28px;border-radius:50%;border:2px solid rgba(255,255,255,.45);margin-bottom:4px;"></div>${['80%', '65%', '90%', '72%'].map(w => `<div style="width:100%;margin-bottom:2px;"><div style="height:2px;background:rgba(255,255,255,.38);border-radius:1px;width:60%;margin-bottom:2px;"></div><div style="height:2.5px;background:rgba(255,255,255,.18);border-radius:1px;overflow:hidden;"><div style="height:100%;width:${w};background:rgba(255,255,255,.52);"></div></div></div>`).join('')}</div><div style="flex:1;padding:10px 9px;background:#fff;">${line('72%', c, 4, 8)}${line('48%', g, 8, 4)}${line('42%', c, 4)}${line('100%', g)}${line('80%', g)}${line('90%', g, 7)}${line('42%', c, 4)}${line('95%', g, 0)}</div></div>`
+        'classic': `<div style="height:100%;overflow:hidden;background:#fff;display:flex;flex-direction:column;"><div style="background:${c};padding:14px 13px 12px;">${line('56%', 'rgba(255,255,255,.92)', 4, 9)}${line('38%', 'rgba(255,255,255,.5)', 0, 5)}</div><div style="padding:9px 13px;flex:1;">${line('32%', c, 3)}${sh()}${line('100%', g)}${line('82%', g)}${line('68%', g, 7)}${line('32%', c, 3)}${sh()}${line('100%', g)}${line('78%', g, 0)}</div></div>`,
+        'sidebar-l': `<div style="display:flex;H0%;overflow:hidden;"><div style="width:36%;background:${c};padding:11px 8px;">${line('100%', 'rgba(255,255,255,.22)', 5, 28)}${['80%', '60%', '75%', '55%', '65%', '45%', '70%'].map(w => `<div style="height:3px;background:rgba(255,255,255,.42);border-radius:1px;width:${w};margin-bottom:5px;"></div>`).join('')}</div><div style="flex:1;padding:10px 9px;background:#fff;">${line('68%', c, 4, 8)}${line('44%', g, 8, 4)}${line('38%', c, 4)}${line('100%', g)}${line('80%', g)}${line('88%', g, 7)}${line('38%', c, 4)}${line('100%', g)}${line('74%', g, 0)}</div></div>`,
+        'sidebar-r': `<div style="display:flex;flex-direction:row-reverse;H0%;overflow:hidden;"><div style="width:33%;background:${c};padding:11px 8px;">${['80%', '60%', '75%', '55%', '65%', '45%'].map(w => `<div style="height:3px;background:rgba(255,255,255,.42);border-radius:1px;width:${w};margin-bottom:5px;"></div>`).join('')}</div><div style="flex:1;padding:10px 9px;background:#fff;">${line('68%', c, 4, 8)}${line('44%', g, 8, 4)}${line('38%', c, 4)}${line('100%', g)}${line('80%', g)}${line('88%', g, 7)}${line('38%', c, 4)}${line('95%', g, 0)}</div></div>`,
+        'two-col': `<div style="height:100%;overflow:hidden;background:#fff;display:flex;flex-direction:column;"><div style="background:${c};padding:11px 13px;">${line('58%', 'rgba(255,255,255,.92)', 3, 9)}${line('40%', 'rgba(255,255,255,.55)', 0, 4)}</div><div style="display:flex;flex:1;"><div style="flex:1;padding:7px 6px 7px 11px;border-right:1px solid ${g};">${line('55%', c, 4, 3)}${line('100%', g)}${line('82%', g)}${line('90%', g, 7)}${line('55%', c, 4, 3)}${line('95%', g, 0)}</div><div style="flex:1;padding:7px 11px 7px 6px;">${line('55%', c, 4, 3)}${line('100%', g)}${line('78%', g, 7)}${line('55%', c, 4, 3)}${['82%', '68%', '90%'].map(w => `<div style="height:3px;background:${g};border-radius:1px;margin-bottom:3px;overflow:hidden;"><div style="height:100%;width:${w};background:${c};opacity:.5;"></div></div>`).join('')}</div></div></div>`,
+        'executive': `<div style="height:100%;overflow:hidden;background:#fff;display:flex;flex-direction:column;"><div style="background:${c};padding:16px 13px 12px;">${line('62%', 'rgba(255,255,255,.95)', 4, 11)}${line('44%', 'rgba(255,255,255,.6)', 3, 5)}<div style="height:1px;background:rgba(255,255,255,.2);margin:5px 0;"></div></div><div style="padding:9px 13px;flex:1;">${line('38%', c, 3)}${sh()}${line('100%', g)}${line('88%', g)}${line('72%', g, 7)}${line('38%', c, 3)}${sh()}${line('100%', g)}${line('90%', g, 0)}</div></div>`,
+        'minimal': `<div style="height:100%;overflow:hidden;background:#fff;padding:14px;">${line('52%', '#1E293B', 3, 9)}${line('37%', '#94A3B8', 2, 4)}${line('26%', c, 7, 3)}<div style="height:1px;background:${g};margin-bottom:7px;opacity:.5;"></div>${line('28%', '#64748B', 4)}${line('100%', g)}${line('84%', g)}${line('90%', g, 8)}<div style="height:1px;background:${g};margin-bottom:7px;"></div>${line('28%', '#64748B', 4)}${line('100%', g)}${line('76%', g, 0)}</div>`,
+        'tech': `<div style="H0%;overflow:hidden;background:#F8FAFF;display:flex;flex-direction:column;"><div style="background:#0F172A;padding:12px;display:flex;align-items:center;gap:7px;"><div style="width:20px;height:20px;border-radius:4px;background:${c};flex-shrink:0;"></div><div style="flex:1;">${line('52%', 'rgba(255,255,255,.85)', 3, 7)}${line('36%', 'rgba(255,255,255,.45)', 0, 3)}</div></div><div style="padding:8px 10px;flex:1;background:#fff;">${line('35%', c, 4)}${line('100%', g)}${line('84%', g)}${line('70%', g, 7)}${line('35%', c, 4)}${line('100%', g)}${line('78%', g, 0)}</div></div>`,
+        'creative': `<div style="height:100%;overflow:hidden;background:#fff;position:relative;"><div style="position:absolute;top:0;left:0;right:0;height:62px;background:${c};clip-path:polygon(0 0,100% 0,100% 62%,0 100%);"></div><div style="position:relative;padding:12px 13px 0;">${line('52%', 'rgba(255,255,255,.94)', 3, 8)}${line('36%', 'rgba(255,255,255,.58)', 0, 4)}</div><div style="padding:36px 13px 9px;">${line('35%', c, 4)}${line('100%', g)}${line('80%', g)}${line('90%', g, 7)}${line('35%', c, 4)}${line('95%', g, 0)}</div></div>`,
+        'timeline': `<div style="height:100%;overflow:hidden;background:#fff;display:flex;flex-direction:column;"><div style="background:${c};padding:11px 13px;">${line('54%', 'rgba(255,255,255,.92)', 3, 8)}${line('38%', 'rgba(255,255,255,.52)', 0, 4)}</div><div style="flex:1;padding:8px 13px;position:relative;"><div style="position:absolute;left:20px;top:8px;bottom:8px;width:1px;background:${g};"></div>${[['60%', '100%'], ['54%', '95%'], ['48%', '88%']].map(([a, b]) => `<div style="display:flex;gap:8px;align-items:flex-start;margin-bottom:8px;"><div style="width:7px;height:7px;border-radius:50%;background:${c};flex-shrink:0;margin-top:2px;z-index:1;"></div><div style="flex:1;">${line(a, c, 3, 4)}${line(b, g, 0)}</div></div>`).join('')}</div></div>`,
+        'header-bar': `<div style="height:100%;overflow:hidden;background:#fff;display:flex;flex-direction:column;"><div style="background:${c};padding:12px 13px 9px;">${line('58%', 'rgba(255,255,255,.92)', 3, 8)}${line('40%', 'rgba(255,255,255,.55)', 2, 4)}</div><div style="height:3px;background:${c};width:28%;margin-left:13px;opacity:.5;border-radius:0 0 2px 2px;"></div><div style="padding:7px 13px;flex:1;">${line('35%', c, 4)}${line('100%', g)}${line('84%', g)}${line('72%', g, 7)}${line('35%', c, 4)}${line('100%', g)}${line('78%', g, 0)}</div></div>`,
+        'academic': `<div style="height:100%;overflow:hidden;background:#fff;padding:13px;display:flex;flex-direction:column;align-items:center;">${line('52%', c, 3, 9)}${line('36%', '#94A3B8', 2, 4)}<div style="height:1px;background:${c};width:55%;margin-bottom:6px;opacity:.4;"></div><div style="width:100%;">${line('32%', c, 3)}${sh()}${line('100%', g)}${line('80%', g)}${line('90%', g, 7)}${line('32%', c, 3)}${sh()}${line('95%', g, 0)}</div></div>`,
+        'infographic': `<div style="display:flex;H0%;overflow:hidden;"><div style="width:38%;background:${c};padding:10px 8px;display:flex;flex-direction:column;align-items:center;gap:4px;"><div style="width:28px;height:28px;border-radius:50%;border:2px solid rgba(255,255,255,.45);margin-bottom:4px;"></div>${['80%', '65%', '90%', '72%'].map(w => `<div style="width:100%;margin-bottom:2px;"><div style="height:2px;background:rgba(255,255,255,.38);border-radius:1px;width:60%;margin-bottom:2px;"></div><div style="height:2.5px;background:rgba(255,255,255,.18);border-radius:1px;overflow:hidden;"><div style="height:100%;width:${w};background:rgba(255,255,255,.52);"></div></div></div>`).join('')}</div><div style="flex:1;padding:10px 9px;background:#fff;">${line('72%', c, 4, 8)}${line('48%', g, 8, 4)}${line('42%', c, 4)}${line('100%', g)}${line('80%', g)}${line('90%', g, 7)}${line('42%', c, 4)}${line('95%', g, 0)}</div></div>`
       };
       return L[lay] || L['classic'];
     }
@@ -6284,7 +6665,8 @@
     }
 
     function initLandingGallery() {
-      renderGallery(LANDING_TEMPLATES);
+      renderFeaturedTemplates();
+      // Gallery filter for the modal
       document.getElementById('filterRow')?.addEventListener('click', e => {
         const btn = e.target.closest('.ftab');
         if (!btn) return;
@@ -6297,6 +6679,264 @@
         searchQ = e.target.value.trim().toLowerCase();
         applyFilter();
       });
+    }
+
+    // Render 6 featured templates on the landing page
+    function renderFeaturedTemplates() {
+      const grid = document.getElementById('featuredTplGrid');
+      if (!grid) return;
+
+      // Rich preview builder — creates a real-looking resume card
+      function richPreview(opts) {
+        const { color, layout, name, title, location, summary, exp, skills, edu } = opts;
+        const g = '#E2E8F0', w = '#fff';
+        const line = (width, clr, mb=3, h=3) => `<div style="height:${h}px;background:${clr};border-radius:2px;width:${width};margin-bottom:${mb}px;"></div>`;
+        const tag = (txt) => `<span style="display:inline-block;padding:1px 5px;background:${color}22;color:${color};border-radius:3px;font-size:6px;font-weight:700;margin-right:3px;margin-bottom:2px;">${txt}</span>`;
+        const secHead = (t) => `<div style="font-size:6.5px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:${color};border-bottom:1.5px solid ${color}22;padding-bottom:2px;margin-bottom:5px;margin-top:8px;">${t}</div>`;
+
+        if (layout === 'sidebar-l') {
+          return `<div style="display:flex;height:100%;overflow:hidden;font-family:sans-serif;">
+            <div style="width:72px;background:${color};padding:10px 7px;flex-shrink:0;">
+              <div style="width:28px;height:28px;border-radius:50%;background:rgba(255,255,255,.2);margin:0 auto 8px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;color:#fff;">${name.split(' ').map(n=>n[0]).join('')}</div>
+              <div style="color:#fff;font-size:6px;font-weight:700;margin-bottom:2px;word-break:break-word">${name}</div>
+              <div style="color:rgba(255,255,255,.7);font-size:5px;margin-bottom:8px;">${title}</div>
+              <div style="color:rgba(255,255,255,.5);font-size:5px;font-weight:700;text-transform:uppercase;margin-bottom:3px;">Contact</div>
+              <div style="color:rgba(255,255,255,.75);font-size:4.5px;margin-bottom:2px;">📍 ${location}</div>
+              <div style="color:rgba(255,255,255,.75);font-size:4.5px;margin-bottom:6px;">✉ ahmad@email.com</div>
+              <div style="color:rgba(255,255,255,.5);font-size:5px;font-weight:700;text-transform:uppercase;margin-bottom:4px;">Skills</div>
+              ${skills.map(s=>`<div style="margin-bottom:4px;"><div style="color:#fff;font-size:4.5px;margin-bottom:1px;">${s}</div><div style="height:2px;background:rgba(255,255,255,.2);border-radius:1px;"><div style="height:100%;width:80%;background:rgba(255,255,255,.75);border-radius:1px;"></div></div></div>`).join('')}
+            </div>
+            <div style="flex:1;padding:10px 9px;background:#fff;overflow:hidden;">
+              <div style="font-size:10px;font-weight:800;color:#1E293B;margin-bottom:1px;">${name}</div>
+              <div style="font-size:6px;color:${color};font-weight:600;margin-bottom:5px;">${title}</div>
+              ${secHead('Summary')}<div style="font-size:5px;color:#475569;line-height:1.5;margin-bottom:2px;">${summary}</div>
+              ${secHead('Experience')}${exp.map(e=>`<div style="margin-bottom:4px;"><div style="display:flex;justify-content:space-between;"><span style="font-size:5.5px;font-weight:700;color:#1E293B;">${e.co}</span><span style="font-size:4.5px;color:#94A3B8;">${e.yr}</span></div><div style="font-size:5px;color:${color};">${e.role}</div><div style="font-size:4.5px;color:#64748B;line-height:1.4;">${e.desc}</div></div>`).join('')}
+            </div>
+          </div>`;
+        }
+
+        if (layout === 'classic') {
+          return `<div style="height:100%;overflow:hidden;background:#fff;padding:12px 14px;font-family:sans-serif;">
+            <div style="text-align:center;margin-bottom:6px;border-bottom:2px solid ${color};padding-bottom:7px;">
+              <div style="font-size:12px;font-weight:800;color:#1E293B;">${name}</div>
+              <div style="font-size:6.5px;color:${color};font-weight:600;margin:2px 0;">${title}</div>
+              <div style="font-size:5px;color:#94A3B8;">📍 ${location} &nbsp;|&nbsp; ✉ ahmad@email.com &nbsp;|&nbsp; 🔗 linkedin.com/in/ahmad</div>
+            </div>
+            ${secHead('Professional Summary')}<div style="font-size:5px;color:#475569;line-height:1.5;margin-bottom:3px;">${summary}</div>
+            ${secHead('Work Experience')}${exp.map(e=>`<div style="margin-bottom:4px;"><div style="display:flex;justify-content:space-between;"><span style="font-size:6px;font-weight:700;color:#1E293B;">${e.co}</span><span style="font-size:5px;color:#94A3B8;">${e.yr}</span></div><div style="font-size:5.5px;color:${color};margin-bottom:1px;">${e.role}</div><div style="font-size:4.5px;color:#64748B;">• ${e.desc}</div></div>`).join('')}
+            ${secHead('Skills')}<div style="display:flex;flex-wrap:wrap;gap:2px;">${skills.map(s=>tag(s)).join('')}</div>
+          </div>`;
+        }
+
+        if (layout === 'executive') {
+          return `<div style="height:100%;overflow:hidden;font-family:sans-serif;">
+            <div style="background:${color};padding:14px 14px 10px;">
+              <div style="font-size:13px;font-weight:800;color:#fff;">${name}</div>
+              <div style="font-size:6.5px;color:rgba(255,255,255,.85);margin-top:2px;">${title} &nbsp;·&nbsp; ${location}</div>
+              <div style="font-size:5px;color:rgba(255,255,255,.6);margin-top:3px;">✉ ahmad@email.com &nbsp;|&nbsp; 🔗 linkedin.com/in/ahmad</div>
+            </div>
+            <div style="padding:8px 14px;background:#fff;">
+              ${secHead('Executive Summary')}<div style="font-size:5px;color:#475569;line-height:1.5;margin-bottom:2px;">${summary}</div>
+              ${secHead('Experience')}${exp.map(e=>`<div style="display:flex;justify-content:space-between;margin-bottom:4px;"><div><div style="font-size:6px;font-weight:700;color:#1E293B;">${e.co}</div><div style="font-size:5.5px;color:${color};">${e.role}</div><div style="font-size:4.5px;color:#64748B;">${e.desc}</div></div><div style="font-size:4.5px;color:#94A3B8;white-space:nowrap;margin-left:4px;">${e.yr}</div></div>`).join('')}
+            </div>
+          </div>`;
+        }
+
+        if (layout === 'tech') {
+          return `<div style="height:100%;overflow:hidden;font-family:monospace;">
+            <div style="background:#0F172A;padding:10px 12px;display:flex;align-items:center;gap:8px;">
+              <div style="width:22px;height:22px;border-radius:5px;background:${color};display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:800;color:#fff;flex-shrink:0;">${name.split(' ').map(n=>n[0]).join('')}</div>
+              <div><div style="font-size:9px;font-weight:800;color:#fff;">${name}</div><div style="font-size:5.5px;color:${color};">${title}</div></div>
+            </div>
+            <div style="display:flex;height:calc(100% - 42px);">
+              <div style="width:70px;background:#F8FAFF;padding:7px 6px;border-right:1px solid #E2E8F0;flex-shrink:0;">
+                <div style="font-size:5px;font-weight:700;color:#64748B;text-transform:uppercase;margin-bottom:4px;">Stack</div>
+                ${skills.map(s=>`<div style="font-size:4.5px;color:#1E293B;padding:2px 4px;background:#fff;border:1px solid #E2E8F0;border-radius:3px;margin-bottom:2px;">${s}</div>`).join('')}
+              </div>
+              <div style="flex:1;padding:7px 8px;background:#fff;overflow:hidden;">
+                ${secHead('About')}<div style="font-size:4.5px;color:#475569;line-height:1.4;margin-bottom:3px;">${summary}</div>
+                ${secHead('Experience')}${exp.map(e=>`<div style="margin-bottom:4px;"><div style="font-size:5.5px;font-weight:700;color:#1E293B;">${e.co}</div><div style="font-size:5px;color:${color};">${e.role}</div><div style="font-size:4.5px;color:#64748B;">${e.desc}</div></div>`).join('')}
+              </div>
+            </div>
+          </div>`;
+        }
+
+        if (layout === 'creative') {
+          return `<div style="height:100%;overflow:hidden;font-family:sans-serif;background:#fff;">
+            <div style="background:${color};padding:14px 14px 0;position:relative;overflow:hidden;">
+              <div style="position:absolute;right:-20px;top:-20px;width:60px;height:60px;background:rgba(255,255,255,.1);border-radius:50%;"></div>
+              <div style="font-size:12px;font-weight:800;color:#fff;position:relative;">${name}</div>
+              <div style="font-size:6px;color:rgba(255,255,255,.8);margin-top:2px;margin-bottom:10px;position:relative;">${title} &nbsp;·&nbsp; ${location}</div>
+            </div>
+            <div style="padding:7px 14px;">
+              ${secHead('Profile')}<div style="font-size:4.5px;color:#475569;line-height:1.5;margin-bottom:3px;">${summary}</div>
+              ${secHead('Experience')}${exp.map(e=>`<div style="margin-bottom:4px;"><div style="font-size:5.5px;font-weight:700;color:#1E293B;">${e.co} <span style="color:${color};">— ${e.role}</span></div><div style="font-size:4.5px;color:#64748B;">${e.desc}</div></div>`).join('')}
+              <div style="display:flex;flex-wrap:wrap;gap:2px;margin-top:4px;">${skills.map(s=>tag(s)).join('')}</div>
+            </div>
+          </div>`;
+        }
+
+        if (layout === 'academic') {
+          return `<div style="height:100%;overflow:hidden;background:#fff;padding:12px 14px;font-family:sans-serif;">
+            <div style="text-align:center;margin-bottom:6px;">
+              <div style="font-size:12px;font-weight:800;color:#1E293B;">${name}</div>
+              <div style="font-size:6.5px;color:${color};font-weight:600;text-transform:uppercase;letter-spacing:.05em;margin:2px 0;">${title}</div>
+              <div style="width:40px;height:2px;background:${color};margin:4px auto;opacity:.4;border-radius:1px;"></div>
+              <div style="font-size:5px;color:#94A3B8;">${location} &nbsp;|&nbsp; ahmad@university.edu</div>
+            </div>
+            ${secHead('Research Interests')}<div style="font-size:5px;color:#475569;line-height:1.5;margin-bottom:3px;">${summary}</div>
+            ${secHead('Education')}${edu.map(e=>`<div style="margin-bottom:4px;"><div style="display:flex;justify-content:space-between;"><span style="font-size:6px;font-weight:700;color:#1E293B;">${e.school}</span><span style="font-size:5px;color:#94A3B8;">${e.yr}</span></div><div style="font-size:5px;color:${color};">${e.deg}</div></div>`).join('')}
+            ${secHead('Skills')}<div style="display:flex;flex-wrap:wrap;gap:2px;">${skills.map(s=>tag(s)).join('')}</div>
+          </div>`;
+        }
+
+        return miniPreview(layout, color);
+      }
+
+      const templates = [
+        {
+          id: 1, name: 'Horizon', cat: 'Modern', tag: 'Popular', tagClass: 'pop',
+          layout: 'sidebar-l', color: SCHEMES[0],
+          data: {
+            name: 'Ahmad Raza', title: 'Senior Software Engineer', location: 'Bahawalpur, PK',
+            summary: 'Senior Software Engineer with 7+ years of experience architecting scalable web applications. Proven track record of reducing system latency by 60%, leading cross-functional teams of 10+, and delivering enterprise-grade solutions for 500K+ active users. Expert in React, Node.js, and cloud infrastructure.',
+            exp: [
+              { co: 'TechCorp Solutions', role: 'Lead Software Engineer', yr: '2021–Present', desc: 'Architected microservices platform; reduced API response time by 60%; led team of 10 engineers across 3 product launches; mentored 5 junior devs' },
+              { co: 'InnovatePK Ltd.', role: 'Senior Full Stack Developer', yr: '2019–2021', desc: 'Built React + Node.js SaaS serving 50K+ users; implemented CI/CD pipeline cutting deployment time by 70%; increased test coverage from 40% to 92%' },
+              { co: 'StartupXY', role: 'Full Stack Developer', yr: '2017–2019', desc: 'Developed customer-facing e-commerce platform processing $2M+ in monthly transactions; optimized database queries by 45%' }
+            ],
+            skills: ['React.js', 'Node.js', 'TypeScript', 'AWS', 'Docker', 'PostgreSQL', 'Redis', 'CI/CD']
+          }
+        },
+        {
+          id: 71, name: 'Compiler', cat: 'Tech', tag: 'Popular', tagClass: 'pop',
+          layout: 'tech', color: SCHEMES[1],
+          data: {
+            name: 'Ahmad Raza', title: 'Full Stack Developer', location: 'Lahore, PK',
+            summary: 'Full Stack Developer specializing in high-performance web applications and distributed systems. Delivered 15+ production applications used by 1M+ users globally. Strong expertise in TypeScript, Next.js, GraphQL, and cloud-native architectures on AWS and GCP.',
+            exp: [
+              { co: 'DevStudio Inc.', role: 'Senior Full Stack Dev', yr: '2020–Present', desc: 'Engineered real-time data pipeline processing 2M+ events/day; reduced infrastructure costs by 35% through optimization; led 8-person dev team' },
+              { co: 'CloudBase Tech', role: 'Backend Engineer', yr: '2018–2020', desc: 'Built GraphQL APIs serving 500K daily requests; implemented OAuth 2.0 auth system; improved backend performance by 50% using Redis caching' },
+              { co: 'CodeLabs PK', role: 'Junior Developer', yr: '2016–2018', desc: 'Developed 12 React components used across 3 enterprise products; automated testing reduced QA cycle by 30%' }
+            ],
+            skills: ['TypeScript', 'Next.js', 'GraphQL', 'MongoDB', 'Kubernetes', 'Python', 'GCP', 'Jest']
+          }
+        },
+        {
+          id: 56, name: 'Director', cat: 'Executive', tag: 'Popular', tagClass: 'pop',
+          layout: 'executive', color: SCHEMES[0],
+          data: {
+            name: 'Ahmad Raza', title: 'Chief Technology Officer', location: 'Karachi, PK',
+            summary: 'Transformational CTO with 14+ years driving digital innovation at Fortune 500 and high-growth startups. Scaled engineering organizations from 15 to 200+ engineers, managed $30M+ technology budgets, and led cloud migrations generating $12M in annual cost savings. Board advisor to 4 technology startups.',
+            exp: [
+              { co: 'GlobalTech Corp.', role: 'Chief Technology Officer', yr: '2019–Present', desc: 'Scaled eng team from 20 to 150+ across 5 countries; led $15M cloud migration saving $4M annually; drove 40% YoY revenue growth through tech strategy; established AI/ML center of excellence' },
+              { co: 'Innovatech MENA', role: 'VP of Engineering', yr: '2015–2019', desc: 'Led 80-engineer org across 4 product lines; architected platform handling 10M+ daily active users; reduced time-to-market by 55% via Agile transformation; $50M digital platform delivery' },
+              { co: 'DigiPak Solutions', role: 'Engineering Director', yr: '2011–2015', desc: 'Built engineering department from scratch; recruited and led 35-person team; delivered 3 award-winning products generating $8M combined revenue' }
+            ],
+            skills: ['Technology Strategy', 'Cloud Architecture', 'P&L Management', 'Team Leadership', 'AI/ML', 'Agile at Scale', 'Digital Transformation', 'Board Advisory']
+          }
+        },
+        {
+          id: 21, name: 'Heritage', cat: 'Classic', tag: 'Popular', tagClass: 'pop',
+          layout: 'classic', color: SCHEMES[0],
+          data: {
+            name: 'Ahmad Raza', title: 'Senior Product Manager', location: 'Islamabad, PK',
+            summary: 'Strategic Product Manager with 8+ years launching B2B/B2C products that generated $25M+ in cumulative ARR. Expert in data-driven product discovery, Agile execution, and cross-functional alignment. Led product teams of 20+ across design, engineering, and data science to achieve consistent 30%+ YoY growth.',
+            exp: [
+              { co: 'ProductCo International', role: 'Senior Product Manager', yr: '2020–Present', desc: 'Owned $10M ARR product line; launched 8 major features with avg 4.8★ rating; grew DAU by 140% to 380K through A/B testing framework; reduced churn by 28%' },
+              { co: 'GrowthApp Ltd.', role: 'Product Manager', yr: '2017–2020', desc: 'Took product from 0 to 250K DAU in 18 months; led 3 product pivots based on user research with 100+ interviews; secured $2M seed funding with product roadmap' },
+              { co: 'StartupABC', role: 'Associate Product Manager', yr: '2015–2017', desc: 'Shipped 20+ features across iOS and Android; implemented data analytics reducing customer support tickets by 40%' }
+            ],
+            skills: ['Product Strategy', 'Roadmapping', 'Data Analytics', 'SQL', 'Figma', 'A/B Testing', 'OKRs', 'Stakeholder Management']
+          }
+        },
+        {
+          id: 41, name: 'Vivid', cat: 'Creative', tag: 'New', tagClass: 'new',
+          layout: 'creative', color: SCHEMES[4],
+          data: {
+            name: 'Ahmad Raza', title: 'Senior UI/UX Designer', location: 'Lahore, PK',
+            summary: 'Award-winning UX Designer with 6+ years creating digital experiences for global brands and tech unicorns. Designed products used by 2M+ people across 30+ countries. Winner of Red Dot Design Award 2023. Expertise in design systems, user research, and motion design that drives measurable business outcomes.',
+            exp: [
+              { co: 'DesignHub Global', role: 'Lead UI/UX Designer', yr: '2021–Present', desc: 'Led design for 12-product portfolio; redesigned flagship app boosting engagement by 80% and revenue by $3M; built design system of 400+ components adopted by 60 engineers' },
+              { co: 'Creative Agency PK', role: 'Senior UX Designer', yr: '2018–2021', desc: 'Delivered UX strategy for 25+ enterprise clients; reduced user drop-off by 45% through usability testing; mentored team of 6 junior designers' },
+              { co: 'Pixel Studio', role: 'UI Designer', yr: '2016–2018', desc: 'Designed 30+ web and mobile interfaces; created brand identities for 15 startups; produced motion graphics increasing social engagement by 120%' }
+            ],
+            skills: ['Figma', 'Framer', 'Adobe XD', 'Illustrator', 'Motion Design', 'User Research', 'Design Systems', 'Prototyping']
+          }
+        },
+        {
+          id: 101, name: 'Scholar', cat: 'Academic', tag: 'Popular', tagClass: 'pop',
+          layout: 'academic', color: SCHEMES[5],
+          data: {
+            name: 'Ahmad Raza', title: 'PhD Researcher — Artificial Intelligence', location: 'Islamabad, PK',
+            summary: 'AI/ML Researcher with expertise in Natural Language Processing, Deep Learning, and Generative AI. Published 18 peer-reviewed papers in IEEE, ACM, and Nature journals with 450+ citations. 3 patents filed. Google PhD Fellowship recipient. Collaborating with MIT CSAIL and Oxford Internet Institute on LLM alignment research.',
+            exp: [],
+            skills: ['Python', 'PyTorch', 'TensorFlow', 'NLP / LLMs', 'Computer Vision', 'Research Methods', 'LaTeX', 'CUDA'],
+            edu: [
+              { school: 'FAST NUCES Islamabad', deg: 'PhD Computer Science — AI/ML', yr: '2020–Present' },
+              { school: 'NUST Pakistan', deg: 'MS Artificial Intelligence — Distinction', yr: '2018–2020' },
+              { school: 'University of Engineering, Lahore', deg: 'BS Computer Science — Gold Medal', yr: '2014–2018' }
+            ]
+          }
+        }
+      ];
+
+
+      grid.innerHTML = templates.map(t => {
+        const tagHtml = t.tagClass === 'pop'
+          ? `<span class="tpl-tag pop">${t.tag}</span>`
+          : t.tagClass === 'new'
+          ? `<span class="tpl-tag new">${t.tag}</span>`
+          : '';
+        const preview = richPreview({
+          color: t.color, layout: t.layout,
+          name: t.data.name, title: t.data.title, location: t.data.location,
+          summary: t.data.summary, exp: t.data.exp, skills: t.data.skills,
+          edu: t.data.edu || []
+        });
+        return `<div class="tpl-card" onclick="selectLandingTemplate(${t.id})">
+          <div class="tpl-thumb">${preview}<div class="tpl-thumb-overlay">Use Template</div></div>
+          <div class="tpl-info">
+            <div class="tpl-name">${t.name}</div>
+            <div class="tpl-footer"><span class="tpl-cat-label">${t.cat}</span><div class="tpl-tags">${tagHtml}</div></div>
+          </div>
+        </div>`;
+      }).join('');
+    }
+
+
+    function openFullTemplateGallery() {
+      renderGallery(LANDING_TEMPLATES);
+      document.getElementById('fullGalleryModal').classList.add('open');
+    }
+    function closeFullTemplateGallery() {
+      document.getElementById('fullGalleryModal').classList.remove('open');
+    }
+
+    // Hamburger nav
+    function toggleMobileNav() {
+      const drawer = document.getElementById('mobileNavDrawer');
+      const overlay = document.getElementById('mobileNavOverlay');
+      if (!drawer || !overlay) return;
+      const isOpen = drawer.classList.contains('open');
+      document.querySelectorAll('.hamburger').forEach(b => b.classList.toggle('open', !isOpen));
+      if (isOpen) {
+        drawer.classList.remove('open');
+        overlay.classList.remove('show');
+        document.body.style.overflow = '';
+      } else {
+        drawer.classList.add('open');
+        overlay.classList.add('show');
+        document.body.style.overflow = 'hidden';
+      }
+    }
+    function closeMobileNav() {
+      document.querySelectorAll('.hamburger').forEach(b => b.classList.remove('open'));
+      const drawer = document.getElementById('mobileNavDrawer');
+      const overlay = document.getElementById('mobileNavOverlay');
+      if (drawer) drawer.classList.remove('open');
+      if (overlay) overlay.classList.remove('show');
+      document.body.style.overflow = '';
     }
 
     function applyFilter() {
@@ -6314,6 +6954,7 @@
       state.template = { id: t.id, name: t.name, cat: t.cat, layout: t.lay, colorIdx: t.sc };
       document.getElementById('tplNameDisp').textContent = t.name + ' · ' + t.cat.charAt(0).toUpperCase() + t.cat.slice(1);
       buildColorSwatches();
+      closeFullTemplateGallery();
       showView('builder');
     }
 
@@ -6628,7 +7269,19 @@
       state.zoom = z; setZoom(z);
       if (clState) { clState.zoom = z; setCLZoom(z); }
     }
-    window.addEventListener('resize', autoZoom);
+    window.addEventListener('resize', () => {
+      autoZoom();
+      // Update ALL bars on resize
+      const activeView = document.querySelector('.view.active');
+      const activeName = activeView ? activeView.id.replace('view-', '') : 'landing';
+      const isMobile = window.innerWidth <= 768;
+      const toolsBar = document.getElementById('mobileToolsBar');
+      if (toolsBar) toolsBar.style.display = (activeName === 'builder' && isMobile) ? 'flex' : 'none';
+      const bottomBar = document.querySelector('#view-builder .mobile-bottom-bar');
+      if (bottomBar) bottomBar.style.display = (activeName === 'builder' && isMobile) ? 'flex' : 'none';
+      const clFooter = document.getElementById('clActionFooter');
+      if (clFooter) clFooter.style.display = (activeName === 'cover' && isMobile) ? 'flex' : 'none';
+    });
 
     // ═══════════════════════════════════════════════════════════════
     // DRAG & DROP SECTIONS
@@ -7033,15 +7686,15 @@
     function updateKeyStatus() {
       const ok = !!getAPIKey();
       const green = '#059669', red = '#DC2626';
-      ['navKeyDot', 'builderKeyDot', 'clKeyDot'].forEach(id => {
+      ['navKeyDot', 'builderKeyDot', 'clKeyDot', 'mndKeyDot'].forEach(id => {
         const el = document.getElementById(id);
         if (el) el.style.background = ok ? green : red;
       });
-      ['navKeyLabel', 'builderKeyLabel', 'clKeyLabel'].forEach(id => {
+      ['navKeyLabel', 'builderKeyLabel', 'clKeyLabel', 'mndKeyLabel'].forEach(id => {
         const el = document.getElementById(id);
         if (el) el.textContent = ok ? 'AI Active' : 'AI Key';
       });
-      ['navKeyBtn', 'builderKeyBtn', 'clKeyBtn'].forEach(id => {
+      ['navKeyBtn', 'builderKeyBtn', 'clKeyBtn', 'mndKeyBtn'].forEach(id => {
         const el = document.getElementById(id);
         if (!el) return;
         if (ok) el.classList.add('active'); else el.classList.remove('active');
@@ -7073,7 +7726,7 @@
       localStorage.setItem('rf_api_key', key);
       document.getElementById('apiKeyModal').classList.remove('open');
       updateKeyStatus();
-      showToast('✓ Google AI key saved! AI features active ho gayi.');
+      /* key saved - no toast */
       if (_pendingAction) {
         const action = _pendingAction; _pendingAction = null;
         setTimeout(() => {
@@ -7090,7 +7743,7 @@
       const inp = document.getElementById('apiKeyInput');
       if (inp) inp.value = '';
       updateKeyStatus();
-      showToast('AI Key removed.');
+      /* key removed - no toast */
     }
 
     // ═══════════════════════════════════════════════════════════════
@@ -7128,7 +7781,7 @@
       if (!key) { openAPIKeyModal(); throw new Error('API key required'); }
       const fullPrompt = (system || 'You are an expert professional resume writer. Be concise and impactful. Output only the requested content — no preamble, no labels, no explanation.') + '\n\n' + prompt;
       const res = await fetch(
-        'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=' + key,
+        'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=' + key,
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -7447,7 +8100,7 @@
 
     function openATSModal() { const results = calcATSDetailed(); const total = results.reduce((s, r) => s + r.score, 0); const maxTotal = results.reduce((s, r) => s + r.max, 0); const pct = Math.round(total / maxTotal * 100); const ring = document.getElementById('atsBigRing'), num = document.getElementById('atsBigNum'), sub = document.getElementById('atsModalGrade'); if (ring) { ring.style.strokeDashoffset = 150.8 - (150.8 * pct / 100); ring.style.stroke = pct >= 80 ? '#059669' : pct >= 50 ? '#D97706' : '#1B4FD8'; } if (num) { num.textContent = pct; num.style.color = pct >= 80 ? '#059669' : pct >= 50 ? '#D97706' : '#1B4FD8'; } if (sub) sub.textContent = pct >= 80 ? 'Excellent — Ready to apply!' : pct >= 60 ? 'Good — A few improvements needed' : pct >= 40 ? 'Needs work — Fill missing sections' : 'Start filling in your resume'; const list = document.getElementById('atsCriteriaList'); if (list) list.innerHTML = results.map(r => { const isPass = r.score === r.max, isWarn = r.score > 0 && r.score < r.max; const bc = isPass ? '#059669' : isWarn ? '#D97706' : '#EF4444'; const bclass = isPass ? 'pass' : isWarn ? 'warn' : 'fail'; return `<div class="ats-criterion ${isPass ? 'pass' : ''}"><div class="ats-crit-head"><div class="ats-crit-label">${r.label}</div><div style="display:flex;align-items:center;gap:7px"><span style="font-size:.77rem;font-family:'Sora',sans-serif;font-weight:700;color:${bc}">${r.score}/${r.max}pts</span><span class="ats-crit-badge ${bclass}">${isPass ? 'Pass' : isWarn ? 'Partial' : 'Missing'}</span></div></div><div class="ats-bar"><div class="ats-bar-fill" style="width:${r.pct}%;background:${bc}"></div></div><div class="ats-crit-tip ${isPass ? 'good' : ''}">${isPass ? r.pass : r.fail}</div></div>`; }).join(''); document.getElementById('atsModal').classList.add('open'); }
 
-    function updateATS() { const results = calcATSDetailed(); const total = results.reduce((s, r) => s + r.score, 0); const maxTotal = results.reduce((s, r) => s + r.max, 0); const score = Math.round(total / maxTotal * 100); const ring = document.getElementById('atsRing'), num = document.getElementById('atsNum'), sub = document.getElementById('atsSubLabel'); const mobRing = document.getElementById('atsRingMob'), mobNum = document.getElementById('atsNumMob'); const c = score >= 80 ? '#059669' : score >= 50 ? '#D97706' : '#1B4FD8'; if (ring) { ring.style.strokeDashoffset = 88 - (88 * score / 100); ring.style.stroke = c; } if (num) { num.textContent = score; num.style.color = c; } if (sub) sub.textContent = score >= 80 ? 'Excellent' : score >= 60 ? 'Good' : score >= 40 ? 'Needs Work' : 'Incomplete'; if (mobRing) { mobRing.style.strokeDashoffset = 88 - (88 * score / 100); mobRing.style.stroke = c; } if (mobNum) { mobNum.textContent = score; mobNum.style.color = c; } refreshSectionHeaders(); const dot = document.getElementById('checklistDot'); if (dot) { const done = CHECKLIST.filter(ch => ch.check()).length; dot.textContent = done; } if (checklistOpen) renderChecklist(); }
+    function updateATS() { const results = calcATSDetailed(); const total = results.reduce((s, r) => s + r.score, 0); const maxTotal = results.reduce((s, r) => s + r.max, 0); const score = Math.round(total / maxTotal * 100); const ring = document.getElementById('atsRing'), num = document.getElementById('atsNum'), sub = document.getElementById('atsSubLabel'); const mobRing = document.getElementById('atsRingMob'), mobNum = document.getElementById('atsNumMob'); const c = score >= 80 ? '#059669' : score >= 50 ? '#D97706' : '#1B4FD8'; if (ring) { ring.style.strokeDashoffset = 88 - (88 * score / 100); ring.style.stroke = c; } if (num) { num.textContent = score; num.style.color = c; } if (sub) sub.textContent = score >= 80 ? 'Excellent' : score >= 60 ? 'Good' : score >= 40 ? 'Needs Work' : 'Incomplete'; if (mobRing) { mobRing.style.strokeDashoffset = 88 - (88 * score / 100); mobRing.style.stroke = c; } if (mobNum) { mobNum.textContent = score; mobNum.style.color = c; } refreshSectionHeaders(); const dot = document.getElementById('checklistDot'); if (dot) { const done = CHECKLIST.filter(ch => ch.check()).length; dot.textContent = done; dot.style.display = done > 0 ? 'flex' : 'none'; } if (checklistOpen) renderChecklist(); }
 
     // ═══════════════════════════════════════════════════════════════
     // EXPORT
@@ -7498,20 +8151,56 @@
     const CHECKLIST = [{ key: 'contact', label: 'Contact Info', sub: 'Name, email, phone', check: () => !!(state.contact.firstName && state.contact.email) }, { key: 'summary', label: 'Summary', sub: '2+ sentences written', check: () => state.summary.length > 40 }, { key: 'exp', label: 'Experience', sub: 'At least 1 job added', check: () => state.experience.length > 0 }, { key: 'bullets', label: 'Bullet Points', sub: 'Achievements described', check: () => state.experience.some(e => e.bullets && e.bullets.length > 20) }, { key: 'edu', label: 'Education', sub: 'School & degree', check: () => state.education.length > 0 }, { key: 'skills', label: 'Skills', sub: '6+ skills added', check: () => state.skills.length >= 6 }, { key: 'template', label: 'Template', sub: 'Style chosen', check: () => true }, { key: 'export', label: 'Ready to Export', sub: 'Download your resume', check: () => !!(state.contact.firstName && state.contact.email && state.experience.length > 0) }];
 
     let checklistOpen = false;
-    function toggleChecklist() { checklistOpen = !checklistOpen; document.getElementById('checklistPopup').classList.toggle('open', checklistOpen); if (checklistOpen) renderChecklist(); }
+    function toggleChecklist() {
+      checklistOpen = !checklistOpen;
+      document.getElementById('checklistPopup').classList.toggle('open', checklistOpen);
+      if (checklistOpen) renderChecklist();
+    }
     function renderChecklist() { const items = document.getElementById('checklistItems'), dot = document.getElementById('checklistDot'), prog = document.getElementById('checklistProgress'); if (!items) return; const done = CHECKLIST.filter(c => c.check()).length; if (dot) dot.textContent = done; if (prog) prog.textContent = `${done}/${CHECKLIST.length}`; items.innerHTML = CHECKLIST.map(c => { const isDone = c.check(); return `<div class="clist-item"><div class="cchk ${isDone ? 'done' : 'todo'}"><svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div><div class="clist-text"><div class="clist-label2" style="${isDone ? 'text-decoration:line-through;color:var(--muted)' : ''}">${c.label}</div><div class="clist-sublabel">${c.sub}</div></div></div>`; }).join(''); }
-    document.addEventListener('click', e => { if (checklistOpen && !e.target.closest('.checklist-popup') && !e.target.closest('#checklistBtn')) { checklistOpen = false; document.getElementById('checklistPopup')?.classList.remove('open'); } });
+    document.addEventListener('click', e => {
+      if (checklistOpen && !e.target.closest('.checklist-popup') && !e.target.closest('.mtb-btn')) {
+        checklistOpen = false;
+        document.getElementById('checklistPopup')?.classList.remove('open');
+      }
+    });
 
     // ═══════════════════════════════════════════════════════════════
     // TOAST
     // ═══════════════════════════════════════════════════════════════
-    function showToast(msg) { const t = document.getElementById('toast'); if (!t) return; t.textContent = msg; t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 3200); }
+    function showToast(msg) { /* toasts disabled */ }
 
     // ═══════════════════════════════════════════════════════════════
     // SCROLL ANIMATIONS
     // ═══════════════════════════════════════════════════════════════
     function initScrollAnimations() { const io = new IntersectionObserver(entries => { entries.forEach(en => { if (en.isIntersecting) { en.target.classList.add('vis'); io.unobserve(en.target); } }); }, { threshold: 0.1 }); document.querySelectorAll('.fade-up').forEach(el => io.observe(el)); }
   </script>
+
+
+  <!-- ═══ MOBILE NAV DRAWER (body-level — escapes nav stacking context) ════ -->
+  <div class="mobile-nav-overlay" id="mobileNavOverlay" onclick="closeMobileNav()"></div>
+  <div class="mobile-nav-drawer" id="mobileNavDrawer">
+    <div class="mnd-header">
+      <div class="nav-logo">
+        <div class="logo-icon"><svg fill="white" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zm-1 2 4.5 4.5H13V4zM6 20V4h5v6h6v10H6z"/></svg></div>
+        <span class="logo-text">Resume<span>Forge</span></span>
+      </div>
+      <button onclick="closeMobileNav()" style="background:none;border:none;font-size:1.4rem;color:var(--muted);cursor:pointer;outline:none">&times;</button>
+    </div>
+    <nav class="mnd-links">
+      <a onclick="scrollToSection('templates');closeMobileNav()">Templates</a>
+      <a onclick="scrollToSection('features');closeMobileNav()">Features</a>
+      <a onclick="scrollToSection('how-it-works');closeMobileNav()">How It Works</a>
+    </nav>
+    <div class="mnd-actions">
+      <button class="btn-aikey" id="mndKeyBtn" onclick="openAPIKeyModal();closeMobileNav()">
+        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="15" height="15"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg>
+        <span id="mndKeyLabel">AI Key</span>
+        <span id="mndKeyDot" style="width:9px;height:9px;border-radius:50%;background:#DC2626;flex-shrink:0;margin-left:2px"></span>
+      </button>
+      <button class="btn btn-outline" onclick="openImportModal();closeMobileNav()">Import Resume</button>
+      <button class="btn btn-primary" onclick="showView('builder');closeMobileNav()">Build My Resume</button>
+    </div>
+  </div>
 
 </body>
 
