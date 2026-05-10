@@ -4159,22 +4159,33 @@
       .resume-paper {
         transform: none !important;
         box-shadow: none !important;
-        width: 100% !important;
-        min-height: auto !important;
+        width: 210mm !important;
+        min-height: 297mm !important;
         margin: 0 !important;
+        padding: 0 !important;
+        position: relative !important;
+        page-break-inside: avoid;
+      }
+
+      .paper-outer {
+        width: 210mm !important;
+        height: auto !important;
+        margin: 0 auto !important;
         padding: 0 !important;
       }
 
+      .paper-label { display: none !important; }
+
       /* Force background colors and box shadows to print */
       * {
-        -webkit-print-color-adjust: exact;
-        print-color-adjust: exact;
-        color-adjust: exact;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+        color-adjust: exact !important;
       }
 
       @page {
         size: A4 portrait;
-        margin: 0;
+        margin: 0mm;
       }
     }
 
@@ -7783,43 +7794,71 @@
       });
     }
 
-    // Core Gemini API call
+    // Gemini models to try in order
+    const GEMINI_MODELS = [
+      'gemini-2.0-flash',
+      'gemini-1.5-flash',
+      'gemini-1.5-flash-latest'
+    ];
+    let _geminiModelIdx = 0;
+
+    // Core Gemini API call with auto model fallback
     async function _geminiFetch(prompt, system, maxTok) {
       const key = getAPIKey();
       if (!key) { openAPIKeyModal(); throw new Error('API key required'); }
       const fullPrompt = (system || 'You are an expert professional resume writer. Be concise and impactful. Output only the requested content — no preamble, no labels, no explanation.') + '\n\n' + prompt;
-      const res = await fetch(
-        'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=' + key,
-        {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            contents: [{ parts: [{ text: fullPrompt }] }],
-            generationConfig: { maxOutputTokens: maxTok || 2000, temperature: 0.7 }
-          })
+
+      let lastErr = null;
+      // Try current model first, then fallbacks
+      for (let attempt = 0; attempt < GEMINI_MODELS.length; attempt++) {
+        const modelIdx = (_geminiModelIdx + attempt) % GEMINI_MODELS.length;
+        const model = GEMINI_MODELS[modelIdx];
+        try {
+          const res = await fetch(
+            'https://generativelanguage.googleapis.com/v1beta/models/' + model + ':generateContent?key=' + key,
+            {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                contents: [{ parts: [{ text: fullPrompt }] }],
+                generationConfig: { maxOutputTokens: maxTok || 2000, temperature: 0.7 }
+              })
+            }
+          );
+          if (!res.ok) {
+            const errData = await res.json().catch(() => ({}));
+            const msg = (errData?.error?.message || '').slice(0, 120);
+            if (res.status === 401 || res.status === 403) {
+              localStorage.removeItem('rf_api_key'); updateKeyStatus();
+              throw new Error('INVALID_KEY');
+            }
+            if (res.status === 429) throw new Error('RATE_LIMIT');
+            if (res.status === 404 || res.status === 400) {
+              // Model not available, try next
+              lastErr = new Error('API Error ' + res.status + (msg ? ': ' + msg : ''));
+              continue;
+            }
+            throw new Error('API Error ' + res.status + (msg ? ': ' + msg : ''));
+          }
+          const data = await res.json();
+          const text = data?.candidates?.[0]?.content?.parts?.[0]?.text || '';
+          if (!text) throw new Error('Empty response. Please try again.');
+          // Remember which model works
+          _geminiModelIdx = modelIdx;
+          return text;
+        } catch (e) {
+          if (e.message === 'INVALID_KEY' || e.message === 'RATE_LIMIT') throw e;
+          lastErr = e;
+          // Continue to next model on network/model errors
         }
-      );
-      if (!res.ok) {
-        const errData = await res.json().catch(() => ({}));
-        const msg = (errData?.error?.message || '').slice(0, 120);
-        if (res.status === 401 || res.status === 403) {
-          localStorage.removeItem('rf_api_key'); updateKeyStatus();
-          throw new Error('INVALID_KEY');
-        }
-        if (res.status === 429) throw new Error('RATE_LIMIT');
-        if (res.status === 404) throw new Error('Model not found — check your API key and try again.');
-        throw new Error('API Error ' + res.status + (msg ? ': ' + msg : ''));
       }
-      const data = await res.json();
-      const text = data?.candidates?.[0]?.content?.parts?.[0]?.text || '';
-      if (!text) throw new Error('Empty response. Please try again.');
-      return text;
+      throw lastErr || new Error('All Gemini models failed. Check your API key.');
     }
 
     // Smart queue — auto space requests, auto retry on 429
     const _aiQueue = {
       queue: [], running: false, lastCall: 0,
-      GAP: 4500,    // 4.5s between requests = safe under 15/min limit
+      GAP: 2000,    // 2s between requests = safe under 15/min limit
       RETRY_WAIT: 20000,  // 20s wait on 429
 
       add(fn) {
@@ -7834,11 +7873,14 @@
         this.running = true;
         while (this.queue.length) {
           const item = this.queue[0];
-          const gap = Date.now() - this.lastCall;
-          if (gap < this.GAP) {
-            const wait = this.GAP - gap;
-            this._status('⏳ Preparing...', Math.ceil(wait / 1000));
-            await _sleep(wait);
+          // Only enforce gap if we've made a previous request
+          if (this.lastCall > 0) {
+            const gap = Date.now() - this.lastCall;
+            if (gap < this.GAP) {
+              const wait = this.GAP - gap;
+              this._status('⏳ Please wait...', Math.ceil(wait / 1000));
+              await _sleep(wait);
+            }
           }
           this._clearStatus();
           try {
@@ -8120,23 +8162,36 @@
     function doExport() { if (selectedExport === 'pdf') downloadPDF(); else if (selectedExport === 'docx') downloadDOCX(); else { downloadTXT(); document.getElementById('exportModal').classList.remove('open'); } }
 
     function downloadPDF() {
-      const element = document.getElementById('resumePaper');
-      if (!element) return;
+      const paper = document.getElementById('resumePaper');
+      if (!paper) return;
 
-      // Store original zoom
       const originalZoom = state.zoom;
-      // Temporarily set zoom to 1 for correct print layout
+
+      // 1. Set zoom to 1 (actual size) for correct print dimensions
       state.zoom = 1;
       setZoom(1);
-      // Use a short delay to ensure the layout is updated
-      setTimeout(() => {
-        window.print();
-        // Restore original zoom after print dialog closes
+
+      // 2. Temporarily force paper to A4 print dimensions
+      const prevW = paper.style.width;
+      const prevMinH = paper.style.minHeight;
+      paper.style.width = '210mm';
+      paper.style.minHeight = '297mm';
+      paper.style.transform = 'none';
+      paper.style.transformOrigin = 'top left';
+
+      // 3. Small delay to ensure layout repaint, then print
+      requestAnimationFrame(() => {
         setTimeout(() => {
-          state.zoom = originalZoom;
-          setZoom(originalZoom);
-        }, 1000);
-      }, 100);
+          window.print();
+          // 4. Restore after print dialog
+          setTimeout(() => {
+            paper.style.width = prevW;
+            paper.style.minHeight = prevMinH;
+            state.zoom = originalZoom;
+            setZoom(originalZoom);
+          }, 500);
+        }, 120);
+      });
     }
 
     function downloadTXT() { const d = state, lines = []; lines.push(fullName().toUpperCase()); if (d.contact.title) lines.push(d.contact.title); const contacts = [d.contact.email, d.contact.phone, d.contact.location].filter(Boolean); if (contacts.length) lines.push(contacts.join(' | ')); if (d.contact.linkedin) lines.push(d.contact.linkedin); lines.push(''); if (d.summary) { lines.push('PROFESSIONAL SUMMARY', '-'.repeat(30), d.summary, ''); } if (d.experience.length) { lines.push('WORK EXPERIENCE', '-'.repeat(30)); d.experience.forEach(e => { const dates = e.startDate ? `${e.startDate} – ${e.current ? 'Present' : e.endDate || ''}` : ''; lines.push(`${e.company || ''}${dates ? ' · ' + dates : ''}`); if (e.title) lines.push(e.title); if (e.bullets) e.bullets.split('\n').filter(l => l.trim()).forEach(b => lines.push('  ' + b)); lines.push(''); }); } if (d.education.length) { lines.push('EDUCATION', '-'.repeat(30)); d.education.forEach(e => { lines.push(e.school || ''); lines.push([e.degree, e.field].filter(Boolean).join(', ')); if (e.startYear || e.endYear) lines.push(`${e.startYear || ''}${e.endYear ? ' – ' + e.endYear : ''}`); lines.push(''); }); } if (d.skills.length) { lines.push('SKILLS', d.skills.map(s => s.skillName).join(', '), ''); } if (d.languages.length) { lines.push('LANGUAGES', d.languages.map(l => [l.langName, l.langLevel].filter(Boolean).join(': ')).join(' | '), ''); } if (d.certifications.length) { lines.push('CERTIFICATIONS'); d.certifications.forEach(c => lines.push([c.certName, c.certIssuer, c.certDate].filter(Boolean).join(' – '))); lines.push(''); } if (d.projects.length) { lines.push('PROJECTS'); d.projects.forEach(p => { lines.push(p.projName || ''); if (p.projTech) lines.push(p.projTech); if (p.projDesc) lines.push(p.projDesc); lines.push(''); }); } const blob = new Blob([lines.join('\n')], { type: 'text/plain' }); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `${fullName().replace(/\s+/g, '-')}-Resume.txt`; a.click(); showToast('TXT resume downloaded!'); }
