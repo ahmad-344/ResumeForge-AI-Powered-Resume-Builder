@@ -6934,8 +6934,8 @@ function esc(s) {
       if (!key) { openAPIKeyModal(); throw new Error('API key required'); }
       const fullPrompt = (system || 'You are an expert professional resume writer. Be concise and impactful. Output only the requested content — no preamble, no labels, no explanation.') + '\n\n' + prompt;
       
-      const models = ['gemini-2.0-flash', 'gemini-1.5-flash', 'gemini-1.5-pro'];
-      let lastErr = null;
+      const models = ['gemini-1.5-flash', 'gemini-2.0-flash', 'gemini-1.5-pro'];
+      const errors = {};
       
       for (const model of models) {
         try {
@@ -6954,7 +6954,7 @@ function esc(s) {
           
           if (!res.ok) {
             const errData = await res.json().catch(() => ({}));
-            const msg = (errData?.error?.message || '').slice(0, 120);
+            const msg = (errData?.error?.message || '').slice(0, 150);
             console.warn(`Gemini model ${model} failed with status ${res.status}: ${msg}`);
             
             if (res.status === 401 || res.status === 403) {
@@ -6962,8 +6962,7 @@ function esc(s) {
               throw new Error('INVALID_KEY');
             }
             
-            // Save rate limit or other error to lastErr and continue the loop to try other models
-            lastErr = new Error(`Model ${model} failed (Status ${res.status}): ${msg}`);
+            errors[model] = `Status ${res.status}: ${msg}`;
             continue; 
           }
           
@@ -6975,17 +6974,20 @@ function esc(s) {
           if (e.message === 'INVALID_KEY') {
             throw e;
           }
-          lastErr = e;
+          errors[model] = e.message || 'Unknown network error';
           console.warn(`Model ${model} request error:`, e);
-          // Try next model
         }
       }
       
-      // If we exhausted all models, check if the last error was a rate limit
-      if (lastErr && (lastErr.message.includes('Status 429') || lastErr.message.includes('RATE_LIMIT'))) {
+      // If we exhausted all models, check if there was a rate limit error (429)
+      const hasRateLimit = Object.values(errors).some(msg => msg.includes('Status 429') || msg.includes('RATE_LIMIT'));
+      if (hasRateLimit) {
         throw new Error('RATE_LIMIT');
       }
-      throw lastErr || new Error('Failed to fetch from Gemini API. Please check your network and API key.');
+      
+      // Construct a detailed aggregated error message
+      const errDetails = Object.entries(errors).map(([m, err]) => `- ${m}: ${err}`).join('\n');
+      throw new Error(`All Gemini models failed to respond.\nDetails:\n${errDetails}`);
     }
 
     // Smart queue — auto space requests, auto retry on 429
