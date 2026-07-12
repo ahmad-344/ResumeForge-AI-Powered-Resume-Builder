@@ -6955,16 +6955,16 @@ function esc(s) {
           if (!res.ok) {
             const errData = await res.json().catch(() => ({}));
             const msg = (errData?.error?.message || '').slice(0, 120);
+            console.warn(`Gemini model ${model} failed with status ${res.status}: ${msg}`);
+            
             if (res.status === 401 || res.status === 403) {
               localStorage.removeItem('rf_api_key'); updateKeyStatus();
               throw new Error('INVALID_KEY');
             }
-            if (res.status === 429) throw new Error('RATE_LIMIT');
-            if (res.status === 404 || res.status === 400) {
-              lastErr = new Error(`Model ${model} failed: ${msg}`);
-              continue; // try next model
-            }
-            throw new Error('API Error ' + res.status + (msg ? ': ' + msg : ''));
+            
+            // Save rate limit or other error to lastErr and continue the loop to try other models
+            lastErr = new Error(`Model ${model} failed (Status ${res.status}): ${msg}`);
+            continue; 
           }
           
           const data = await res.json();
@@ -6972,13 +6972,18 @@ function esc(s) {
           if (!text) throw new Error('Empty response. Please try again.');
           return text;
         } catch (e) {
-          if (e.message === 'INVALID_KEY' || e.message === 'RATE_LIMIT') {
+          if (e.message === 'INVALID_KEY') {
             throw e;
           }
           lastErr = e;
           console.warn(`Model ${model} request error:`, e);
           // Try next model
         }
+      }
+      
+      // If we exhausted all models, check if the last error was a rate limit
+      if (lastErr && (lastErr.message.includes('Status 429') || lastErr.message.includes('RATE_LIMIT'))) {
+        throw new Error('RATE_LIMIT');
       }
       throw lastErr || new Error('Failed to fetch from Gemini API. Please check your network and API key.');
     }
