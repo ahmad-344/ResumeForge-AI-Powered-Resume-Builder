@@ -6253,7 +6253,7 @@
             </svg>
             AI Resume Writer
             <span
-              style="background:rgba(255,255,255,.18);color:#fff;padding:1px 7px;border-radius:100px;font-size:.65rem;font-weight:700">CLAUDE</span>
+              style="background:rgba(255,255,255,.18);color:#fff;padding:1px 7px;border-radius:100px;font-size:.65rem;font-weight:700">GEMINI</span>
           </div>
           <button class="ai-close-btn" onclick="closeAIPanel()">
             <svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" width="12" height="12">
@@ -6285,7 +6285,7 @@
               </svg>
               AI Cover Letter Generator
             </div>
-            <div class="ai-side-sub">Fill in details — Claude writes your entire letter</div>
+            <div class="ai-side-sub">Fill in details — Gemini writes your entire letter</div>
           </div>
           <button class="ai-close" onclick="closeCLAIPanel()">
             <svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" width="12" height="12">
@@ -6934,7 +6934,7 @@ function esc(s) {
       if (!key) { openAPIKeyModal(); throw new Error('API key required'); }
       const fullPrompt = (system || 'You are an expert professional resume writer. Be concise and impactful. Output only the requested content — no preamble, no labels, no explanation.') + '\n\n' + prompt;
       
-      const models = ['gemini-1.5-flash', 'gemini-2.0-flash', 'gemini-1.5-pro'];
+      const models = ['gemini-2.0-flash', 'gemini-2.5-flash', 'gemini-1.5-flash'];
       const errors = {};
       
       for (const model of models) {
@@ -7028,7 +7028,7 @@ function esc(s) {
               await _sleep(wait);
             } else if (e.message === 'INVALID_KEY') {
               this.queue.shift();
-              item.reject(new Error('Invalid API key — please re-enter your Google AI Studio key.'));
+              item.reject(new Error('Invalid API key — please get a new key from aistudio.google.com/apikey and re-enter it.'));
             } else if (e.message === 'RATE_LIMIT') {
               this.queue.shift();
               item.reject(new Error('Rate limit — too many requests. Please wait a minute.'));
